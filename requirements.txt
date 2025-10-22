@@ -1,0 +1,36 @@
+# Web Automation
+selenium==4.15.2
+undetected-chromedriver>=3.5.5
+webdriver-manager==4.0.1
+
+# Image Processing & OCR (for captcha)
+Pillow==10.1.0
+opencv-python-headless>=4.8.0  # Headless version (lighter, no GUI)
+pytesseract==0.3.10
+numpy<2.0.0  # OpenCV requires numpy 1.x
+
+# Terminal UI & Logging
+rich==13.7.0
+colorama==0.4.6
+questionary==2.0.1
+
+# Configuration
+PyYAML==6.0.1
+python-dotenv==1.0.0
+
+# Utilities
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+setuptools>=68.0.0  # Required for Python 3.12+ (provides distutils)
+
+# Time & Date
+python-dateutil==2.8.2
+
+# Code formatters and linters (for development)
+black==23.12.1
+isort==5.13.2
+autopep8==2.0.4
+flake8==7.0.0
+pylint==3.0.3
+pre-commit==3.6.0

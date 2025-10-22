@@ -1,0 +1,99 @@
+active_service: null
+browser:
+  disable_images: false
+  headless: false
+  use_adblock: true
+  user_agent:
+    Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
+    Chrome/121.0.0.0 Safari/537.36
+  window_size: 1920,1080
+captcha:
+  auto_open_image: true
+  auto_solve: false
+  debug_mode: false
+  fast_mode: true
+  manual_input: true
+  ocr_advanced:
+    aggressive_ocr_configs: false
+    aggressive_preprocessing: false
+    character_overlap_tolerance: 0.5
+    handle_uneven_text: true
+    horizontal_reading: true
+    vertical_variance_tolerance: 0.8
+  save_image: true
+logging:
+  colorful: true
+  level: MAIN
+  save_to_file: true
+paths:
+  logs: logs
+  screenshots: screenshots
+retry:
+  auto_retry_on_cooldown: true
+  max_attempts: 3
+  on_captcha_fail: true
+service_execution:
+  active_service_only: false
+  current_active_service: null
+  default_target: 1
+  show_countdown: true
+service_targets:
+  comments_hearts: 700
+  favorites: 800
+  followers: 500
+  hearts: 600
+  livestream: 400
+  per_execution:
+    comments_hearts: 25
+    favorites: 100
+    followers: 50
+    hearts: 25
+    livestream: 50
+    shares: 50
+    views: 500
+  shares: 900
+  views: 1000
+timeouts:
+  between_actions: 2
+  captcha_solve: 120
+  element_wait: 10
+  page_load: 30
+  retry_delay: 5
+zefoy:
+  services:
+    - button_class: t-followers-button
+      enabled: false
+      form_action: c2VuZF9mb2xsb3dlcnNfdGlrdG9r
+      menu_class: t-followers-menu
+      name: Followers
+    - button_class: t-livestream-button
+      enabled: false
+      form_action: c2VuZC9tb2xsb3dlcnNfdGlrdGLL
+      menu_class: t-livestream-menu
+      name: Live Stream
+    - button_class: t-hearts-button
+      enabled: true
+      form_action: c2VuZE9nb2xsb3dlcnNfdGlrdG9r
+      menu_class: t-hearts-menu
+      name: Hearts
+    - button_class: t-chearts-button
+      enabled: true
+      form_action: c2VuZC9mb2xsb3dlcnNfdGlrdG9r
+      menu_class: t-chearts-menu
+      name: Comments Hearts
+    - button_class: t-views-button
+      enabled: true
+      form_action: c2VuZC9mb2xeb3dlcnNfdGlrdG9V
+      menu_class: t-views-menu
+      name: Views
+    - button_class: t-shares-button
+      enabled: true
+      form_action: c2VuZC9mb2xsb3dlcnNfdGlrdG9s
+      menu_class: t-shares-menu
+      name: Shares
+    - button_class: t-favorites-button
+      enabled: true
+      form_action: c2VuZF9tb2xsb3dlcnNfdGlrdG9L
+      menu_class: t-favorites-menu
+      name: Favorites
+  url: https://zefoy.com

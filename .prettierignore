@@ -1,0 +1,42 @@
+# Ignore files and directories
+
+# Dependencies
+venv/
+node_modules/
+.venv/
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+
+# Caches
+__pycache__/
+*.pyc
+.cache/
+
+# Git
+.git/
+
+# Logs
+logs/
+*.log
+
+# Screenshots
+screenshots/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Specific files
+LICENSE
+*.min.js
+*.min.css
+

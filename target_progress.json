@@ -1,0 +1,47 @@
+{
+  "last_updated": "2025-10-22T17:28:47.887451",
+  "services": {
+    "Followers": {
+      "target": 1000,
+      "per_execution": 50,
+      "current": 0,
+      "executions": 0
+    },
+    "Hearts": {
+      "target": 10000,
+      "per_execution": 100,
+      "current": 100,
+      "executions": 1
+    },
+    "Comments Hearts": {
+      "target": 5000,
+      "per_execution": 50,
+      "current": 0,
+      "executions": 0
+    },
+    "Views": {
+      "target": 50000,
+      "per_execution": 1000,
+      "current": 0,
+      "executions": 0
+    },
+    "Shares": {
+      "target": 2000,
+      "per_execution": 50,
+      "current": 0,
+      "executions": 0
+    },
+    "Favorites": {
+      "target": 3000,
+      "per_execution": 100,
+      "current": 0,
+      "executions": 0
+    },
+    "Live Stream": {
+      "target": 500,
+      "per_execution": 50,
+      "current": 0,
+      "executions": 0
+    }
+  }
+}

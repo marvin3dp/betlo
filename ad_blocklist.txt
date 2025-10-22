@@ -1,0 +1,73 @@
+# Comprehensive Ad-Blocking Hosts List
+# Blocks Google Ads, DoubleClick, AdSense, and other ad networks
+
+# Google Ads & DoubleClick
+0.0.0.0 doubleclick.net
+0.0.0.0 www.doubleclick.net
+0.0.0.0 ad.doubleclick.net
+0.0.0.0 stats.g.doubleclick.net
+0.0.0.0 googleads.g.doubleclick.net
+0.0.0.0 pubads.g.doubleclick.net
+0.0.0.0 securepubads.g.doubleclick.net
+
+# Google AdSense & AdServices
+0.0.0.0 googlesyndication.com
+0.0.0.0 www.googlesyndication.com
+0.0.0.0 pagead2.googlesyndication.com
+0.0.0.0 tpc.googlesyndication.com
+0.0.0.0 googleadservices.com
+0.0.0.0 www.googleadservices.com
+0.0.0.0 pagead.googlesyndication.com
+
+# Google Analytics & Tag Manager
+0.0.0.0 google-analytics.com
+0.0.0.0 www.google-analytics.com
+0.0.0.0 ssl.google-analytics.com
+0.0.0.0 googletagmanager.com
+0.0.0.0 www.googletagmanager.com
+0.0.0.0 googletagservices.com
+0.0.0.0 www.googletagservices.com
+
+# Additional Google Ad Domains
+0.0.0.0 afs.googlesyndication.com
+0.0.0.0 partnerad.l.doubleclick.net
+0.0.0.0 adservice.google.com
+0.0.0.0 ads.google.com
+0.0.0.0 adwords.google.com
+0.0.0.0 adsense.google.com
+
+# Common Ad Networks
+0.0.0.0 adnxs.com
+0.0.0.0 advertising.com
+0.0.0.0 adbrite.com
+0.0.0.0 adbureau.net
+0.0.0.0 admob.com
+0.0.0.0 adsrvr.org
+0.0.0.0 adtech.de
+0.0.0.0 contextweb.com
+0.0.0.0 criteo.com
+0.0.0.0 media.net
+0.0.0.0 outbrain.com
+0.0.0.0 quantserve.com
+0.0.0.0 rubiconproject.com
+0.0.0.0 scorecardresearch.com
+0.0.0.0 taboola.com
+
+# Facebook Ads
+0.0.0.0 facebook.com/ads
+0.0.0.0 ads.facebook.com
+0.0.0.0 an.facebook.com
+
+# Amazon Ads
+0.0.0.0 aax.amazon-adsystem.com
+0.0.0.0 advertising.amazon.com
+
+# Microsoft/Bing Ads
+0.0.0.0 ads.msn.com
+0.0.0.0 adnexus.net
+
+# Tracking & Telemetry
+0.0.0.0 2mdn.net
+0.0.0.0 moatads.com
+0.0.0.0 imasdk.googleapis.com
+
