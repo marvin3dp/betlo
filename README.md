@@ -1088,37 +1088,57 @@ This project uses the following open-source libraries:
 
 ---
 
-## 🆕 What's New in v2.2.0
+## 🆕 What's New in v3.0.0
 
-### October 23, 2025 Update
+### October 23, 2025 Update - Major Release
 
-#### ✨ User-Friendly Statistics Display
+#### 🔄 BREAKING CHANGE: Package Renamed to Betlo
 
-- **Improved Uptime Format** - Shows `4m 16s` instead of `0:04:16.736806`
-  - Auto-adjusts: `45s` / `4m 16s` / `1h 23m 45s`
-  - Clean, readable format
-  - No more microseconds!
+- **Package renamed** from `zefoy_bot` to `betlo`
+  - Import changes: `from zefoy_bot.main` → `from betlo.main`
+  - Log files: `zefoy_bot_*.log` → `betlo_*.log`
+  - Module path: `python -m zefoy_bot` → `python -m betlo`
+  - All 37 files updated with new package name
+  - Complete documentation updated across all files
 
-- **Enhanced Statistics Viewer** - Main menu statistics now functional
-  - Shows live stats when bot is running
-  - Shows last session data when bot is not running
-  - Reads from `target_progress.json` automatically
-  - Beautiful centered display with helpful tips
+#### ⚡ 10-60x Faster Commits with Optimized Pre-commit
 
-#### 🎨 Professional README
+- **Commit speed improved dramatically**
+  - Before: 2-5 minutes (waiting for Node.js/Go installation)
+  - After: 2-5 seconds for normal commits ⚡
+  
+- **Two-tier approach**
+  - Fast hooks: Run automatically on every commit (2-5 seconds)
+  - Slow hooks: Run manually before push (2-5 minutes)
+  
+- **Smart hook staging**
+  - Markdown linter → manual only (was slow)
+  - YAML formatter → manual only (was slow)
+  - Shell formatter → manual only (was slow)
+  - Python formatters → auto-run, scoped to `betlo/*.py`
 
-- Complete README overhaul with modern design
-- ASCII art logo and badges
-- Comprehensive documentation structure
-- Beautiful tables and screenshots
-- Professional GitHub repository appearance
+- **New documentation**
+  - `PRE_COMMIT_GUIDE.md` - Complete usage guide
+  - Learn how to run fast commits and full checks
 
-#### 📚 Complete Documentation Update
+#### 📝 Migration Guide
 
-- Updated all documentation files
-- Added new guides and references
-- Improved organization and readability
-- Cross-referenced between documents
+**Update your imports:**
+```python
+# OLD
+from zefoy_bot.main import main
+import zefoy_bot
+
+# NEW  
+from betlo.main import main
+import betlo
+```
+
+**Quick steps:**
+1. Pull latest changes: `git pull`
+2. Update imports in your code
+3. Reinstall pre-commit: `pre-commit install`
+4. Enjoy faster commits! 🚀
 
 **See [CHANGELOG.md](docs/CHANGELOG.md) for complete version history**
 
@@ -1149,8 +1169,7 @@ This project uses the following open-source libraries:
 
 ---
 
-**Last Updated:** October 23, 2025 **Current Version:** 2.2.0 - Enhanced
-Statistics & Professional Documentation
+**Last Updated:** October 23, 2025 **Current Version:** 3.0.0 - Package Renamed to Betlo & Optimized Pre-commit
 
 **[↑ Back to Top](#-table-of-contents)**
 

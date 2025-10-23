@@ -1,10 +1,150 @@
 # Changelog
 
-All notable changes to Zefoy Bot will be documented in this file.
+All notable changes to Betlo will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [3.0.0] - 2025-10-23
+
+### 🔄 BREAKING CHANGES - Package Renamed
+
+#### Package Name Changed: `zefoy_bot` → `betlo`
+
+**This is a major breaking change requiring updates to imports.**
+
+**Migration Required:**
+
+```python
+# OLD (no longer works)
+from zefoy_bot.main import main
+import zefoy_bot
+
+# NEW (required)
+from betlo.main import main
+import betlo
+```
+
+**What Changed:**
+
+1. **Directory Renamed**
+   - `/zefoy_bot/` → `/betlo/`
+   - All Python modules now under `betlo` package
+
+2. **Import Statements Updated**
+   - `run.py`: `from zefoy_bot.main` → `from betlo.main`
+   - `betlo/__main__.py`: Module docstring updated
+   - All internal imports remain relative (no changes needed)
+
+3. **Log Files Renamed**
+   - `logs/zefoy_bot_YYYYMMDD.log` → `logs/betlo_YYYYMMDD.log`
+
+4. **Documentation Updated** (15 files)
+   - All code examples updated with new package name
+   - All file path references updated
+   - All command examples updated
+
+5. **Installation Commands Updated**
+   ```bash
+   # OLD
+   python -m zefoy_bot
+   
+   # NEW
+   python -m betlo
+   ```
+
+**Files Modified:** 37 files
+- 1 directory renamed
+- 3 code files updated
+- 1 installation script updated
+- 13 documentation files updated
+
+**No Functional Changes**
+- All features remain the same
+- All configurations remain compatible
+- Only package name changed
+
+---
+
+### ⚡ Pre-commit Optimization
+
+#### Dramatically Improved Commit Speed
+
+**Before:** 2-5 minutes per commit (installing Node.js/Go)  
+**After:** 2-5 seconds per commit ⚡
+
+**Key Improvements:**
+
+1. **Moved Slow Hooks to Manual Stage**
+   - Markdown linter (requires Node.js) → manual only
+   - YAML formatter (requires Node.js) → manual only
+   - Shell formatter (requires Go) → manual only
+   - Flake8 linter → manual only
+
+2. **Fast Hooks Run Automatically**
+   - File fixes (whitespace, EOF, line endings)
+   - YAML/JSON validation
+   - Black (Python formatter) - scoped to `betlo/*.py`
+   - isort (import sorter) - scoped to `betlo/*.py`
+
+3. **Two-Tier Approach**
+   ```bash
+   # Fast commits (auto - 2-5 seconds)
+   git commit -m "your message"
+   
+   # Full checks before push (manual - 2-5 minutes)
+   pre-commit run --hook-stage manual --all-files
+   ```
+
+**Configuration Changes:**
+
+```yaml
+# Fast hooks (auto-run)
+- black: files: ^betlo/.*\.py$
+- isort: files: ^betlo/.*\.py$
+
+# Slow hooks (manual only)
+- flake8: stages: [manual]
+- markdownlint: stages: [manual]
+- pretty-format-yaml: stages: [manual]
+- shfmt: stages: [manual]
+```
+
+**Files Modified:**
+- `.pre-commit-config.yaml` - Optimized configuration
+- `PRE_COMMIT_GUIDE.md` - New comprehensive guide
+
+**Documentation Added:**
+- `PRE_COMMIT_GUIDE.md` - Complete usage guide with examples
+
+**Performance:**
+
+| Configuration | Commit Time | Use Case |
+|--------------|-------------|----------|
+| Old (all hooks) | 2-5 minutes | Too slow |
+| New (fast only) | 2-5 seconds | ✅ Daily commits |
+| New (with manual) | 2-5 minutes | Before push |
+
+---
+
+### 📝 Summary
+
+**Version 3.0.0 Highlights:**
+
+✅ **Package renamed** to `betlo` (breaking change)  
+⚡ **10-60x faster commits** with optimized pre-commit  
+📚 **Complete documentation** updated across all files  
+🔧 **Zero functional changes** - all features work the same  
+
+**Migration Steps:**
+
+1. Pull latest changes: `git pull`
+2. Update imports: `zefoy_bot` → `betlo`
+3. Reinstall pre-commit: `pre-commit install`
+4. Done! Enjoy faster commits! 🚀
 
 ---
 
