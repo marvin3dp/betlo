@@ -44,7 +44,7 @@ repos:
       - id: flake8
         args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
         files: ^betlo/.*\.py$
-        stages: [manual]  # Only run manually, not on commit
+        stages: [manual] # Only run manually, not on commit
 
   # SLOW HOOKS - Moved to manual stage (run with: pre-commit run --hook-stage manual)
   # These require Node.js/Go environments which are slow to install
@@ -55,7 +55,7 @@ repos:
     hooks:
       - id: pretty-format-yaml
         args: ["--autofix", "--indent", "2"]
-        stages: [manual]  # Only run manually
+        stages: [manual] # Only run manually
 
   # Markdown linter (SLOW - requires Node.js)
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -63,7 +63,7 @@ repos:
     hooks:
       - id: markdownlint
         args: ["--fix"]
-        stages: [manual]  # Only run manually
+        stages: [manual] # Only run manually
 
   # Shell script formatter (SLOW - requires Go)
   - repo: https://github.com/scop/pre-commit-shfmt
@@ -71,4 +71,4 @@ repos:
     hooks:
       - id: shfmt
         args: ["-i", "4", "-bn", "-ci", "-sr", "-w"]
-        stages: [manual]  # Only run manually
+        stages: [manual] # Only run manually

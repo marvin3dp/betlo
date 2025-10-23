@@ -1106,11 +1106,9 @@ This project uses the following open-source libraries:
 - **Commit speed improved dramatically**
   - Before: 2-5 minutes (waiting for Node.js/Go installation)
   - After: 2-5 seconds for normal commits ⚡
-  
 - **Two-tier approach**
   - Fast hooks: Run automatically on every commit (2-5 seconds)
   - Slow hooks: Run manually before push (2-5 minutes)
-  
 - **Smart hook staging**
   - Markdown linter → manual only (was slow)
   - YAML formatter → manual only (was slow)
@@ -1124,17 +1122,19 @@ This project uses the following open-source libraries:
 #### 📝 Migration Guide
 
 **Update your imports:**
+
 ```python
 # OLD
 from zefoy_bot.main import main
 import zefoy_bot
 
-# NEW  
+# NEW
 from betlo.main import main
 import betlo
 ```
 
 **Quick steps:**
+
 1. Pull latest changes: `git pull`
 2. Update imports in your code
 3. Reinstall pre-commit: `pre-commit install`
@@ -1169,7 +1169,8 @@ import betlo
 
 ---
 
-**Last Updated:** October 23, 2025 **Current Version:** 3.0.0 - Package Renamed to Betlo & Optimized Pre-commit
+**Last Updated:** October 23, 2025 **Current Version:** 3.0.0 - Package Renamed
+to Betlo & Optimized Pre-commit
 
 **[↑ Back to Top](#-table-of-contents)**
 

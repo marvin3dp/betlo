@@ -48,21 +48,24 @@ import betlo
    - All command examples updated
 
 5. **Installation Commands Updated**
+
    ```bash
    # OLD
    python -m zefoy_bot
-   
+
    # NEW
    python -m betlo
    ```
 
 **Files Modified:** 37 files
+
 - 1 directory renamed
 - 3 code files updated
 - 1 installation script updated
 - 13 documentation files updated
 
 **No Functional Changes**
+
 - All features remain the same
 - All configurations remain compatible
 - Only package name changed
@@ -73,7 +76,7 @@ import betlo
 
 #### Dramatically Improved Commit Speed
 
-**Before:** 2-5 minutes per commit (installing Node.js/Go)  
+**Before:** 2-5 minutes per commit (installing Node.js/Go)
 **After:** 2-5 seconds per commit ⚡
 
 **Key Improvements:**
@@ -91,10 +94,11 @@ import betlo
    - isort (import sorter) - scoped to `betlo/*.py`
 
 3. **Two-Tier Approach**
+
    ```bash
    # Fast commits (auto - 2-5 seconds)
    git commit -m "your message"
-   
+
    # Full checks before push (manual - 2-5 minutes)
    pre-commit run --hook-stage manual --all-files
    ```
@@ -114,19 +118,21 @@ import betlo
 ```
 
 **Files Modified:**
+
 - `.pre-commit-config.yaml` - Optimized configuration
 - `PRE_COMMIT_GUIDE.md` - New comprehensive guide
 
 **Documentation Added:**
+
 - `PRE_COMMIT_GUIDE.md` - Complete usage guide with examples
 
 **Performance:**
 
-| Configuration | Commit Time | Use Case |
-|--------------|-------------|----------|
-| Old (all hooks) | 2-5 minutes | Too slow |
-| New (fast only) | 2-5 seconds | ✅ Daily commits |
-| New (with manual) | 2-5 minutes | Before push |
+| Configuration     | Commit Time | Use Case         |
+| ----------------- | ----------- | ---------------- |
+| Old (all hooks)   | 2-5 minutes | Too slow         |
+| New (fast only)   | 2-5 seconds | ✅ Daily commits |
+| New (with manual) | 2-5 minutes | Before push      |
 
 ---
 
@@ -134,10 +140,10 @@ import betlo
 
 **Version 3.0.0 Highlights:**
 
-✅ **Package renamed** to `betlo` (breaking change)  
-⚡ **10-60x faster commits** with optimized pre-commit  
-📚 **Complete documentation** updated across all files  
-🔧 **Zero functional changes** - all features work the same  
+✅ **Package renamed** to `betlo` (breaking change)
+⚡ **10-60x faster commits** with optimized pre-commit
+📚 **Complete documentation** updated across all files
+🔧 **Zero functional changes** - all features work the same
 
 **Migration Steps:**
 
