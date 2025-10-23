@@ -50,8 +50,8 @@ chmod +x format.sh
 
 ```bash
 # Python only
-black --line-length 100 zefoy_bot/*.py
-isort --profile black zefoy_bot/*.py
+black --line-length 100 betlo/*.py
+isort --profile black betlo/*.py
 
 # Markdown only
 prettier --write "**/*.md"
@@ -80,7 +80,7 @@ pip install black
 **Usage:**
 
 ```bash
-black --line-length 100 zefoy_bot/
+black --line-length 100 betlo/
 ```
 
 **Configuration:** `pyproject.toml`
@@ -111,7 +111,7 @@ pip install isort
 **Usage:**
 
 ```bash
-isort --profile black --line-length 100 zefoy_bot/
+isort --profile black --line-length 100 betlo/
 ```
 
 **Configuration:** `pyproject.toml`

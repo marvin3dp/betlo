@@ -411,7 +411,7 @@ find screenshots/ -name "captcha_manual_*.png" -mtime +7 -delete
 
 **Total Changes**: 3 files
 
-- `zefoy_bot/captcha_solver.py` - Added auto-open functionality
+- `betlo/captcha_solver.py` - Added auto-open functionality
 - `config.yaml` - Added `auto_open_image` config option
 - **NEW**: `AUTO_OPEN_CAPTCHA_FEATURE.md` - This documentation
 

@@ -92,9 +92,6 @@ pip install -r requirements.txt
 #### Step 5: Configure
 
 ```bash
-# Copy example config (if exists)
-cp config.example.yaml config.yaml
-
 # Edit configuration
 nano config.yaml
 # OR

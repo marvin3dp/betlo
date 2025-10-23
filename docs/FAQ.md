@@ -669,7 +669,7 @@ google-chrome --version
 **Check logs:**
 
 ```bash
-tail -100 logs/zefoy_bot_*.log
+tail -100 logs/betlo_*.log
 ```
 
 **Common errors:**
@@ -699,7 +699,7 @@ tail -100 logs/zefoy_bot_*.log
 
 ### Can I modify OCR preprocessing?
 
-Yes! Edit `zefoy_bot/captcha_solver.py`:
+Yes! Edit `betlo/captcha_solver.py`:
 
 ```python
 def _preprocess_image(self, image):

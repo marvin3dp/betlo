@@ -54,7 +54,7 @@ class ZefoyBot:
         self.headless = headless or self.config.browser_headless
 
         # Setup logger
-        log_file = self.config.logs_path / f"zefoy_bot_{datetime.now().strftime('%Y%m%d')}.log"
+        log_file = self.config.logs_path / f"betlo_{datetime.now().strftime('%Y%m%d')}.log"
         self.logger = get_logger(
             name="ZefoyBot", log_file=str(log_file), level=self.config.get("logging.level", "INFO")
         )

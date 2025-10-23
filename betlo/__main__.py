@@ -1,5 +1,5 @@
 """
-Entry point when running package as module: python -m zefoy_bot
+Entry point when running package as module: python -m betlo
 """
 
 from .main import main

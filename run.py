@@ -6,7 +6,7 @@ Usage: python run.py
 
 import sys
 
-from zefoy_bot.main import main
+from betlo.main import main
 
 if __name__ == "__main__":
     try:

@@ -24,7 +24,7 @@ di-ban.
 
 ### 1. **Continuous Mode - Fallback Cooldown Sebelum Execution**
 
-**File**: `zefoy_bot/bot.py` (Line ~502-508)
+**File**: `betlo/bot.py` (Line ~502-508)
 
 **Sebelum:**
 

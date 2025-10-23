@@ -61,4 +61,3 @@ htmlcov/
 .github.local/secrets.env
 .github.local/*.env
 !.github.local/*.env.example
-

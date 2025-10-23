@@ -81,7 +81,7 @@ and this project adheres to
 
 **Files Modified:**
 
-- `zefoy_bot/bot.py` - Updated progress tracking in 3 locations:
+- `betlo/bot.py` - Updated progress tracking in 3 locations:
   - Line ~738: Target-based execution
   - Line ~902: Continuous mode execution
   - Line ~1101: Cooldown-based execution
@@ -190,7 +190,7 @@ def print_statistics(self):
 
 **Files Modified:**
 
-- `zefoy_bot/bot.py` - Updated `print_statistics()` method
+- `betlo/bot.py` - Updated `print_statistics()` method
 
 ---
 
@@ -249,7 +249,7 @@ def print_statistics(self):
 
 **Files Modified:**
 
-- `zefoy_bot/main.py` - Completely rewrote `_view_statistics()` method
+- `betlo/main.py` - Completely rewrote `_view_statistics()` method
 
 ---
 
@@ -330,8 +330,8 @@ def print_statistics(self):
 #### Code Changes
 
 - **Files Modified:** 2
-  - `zefoy_bot/bot.py` - Uptime formatting
-  - `zefoy_bot/main.py` - Statistics viewer
+  - `betlo/bot.py` - Uptime formatting
+  - `betlo/main.py` - Statistics viewer
 
 - **Lines Changed:**
   - `bot.py`: +11 lines (uptime formatting logic)
@@ -409,7 +409,7 @@ else:
 
 #### Files Modified
 
-- `zefoy_bot/bot.py` - 6 locations updated with fallback cooldown
+- `betlo/bot.py` - 6 locations updated with fallback cooldown
 
 #### Documentation
 
@@ -455,7 +455,7 @@ def _open_image_with_default_app(self, image_path: Path) -> bool:
 
 #### Files Modified
 
-- `zefoy_bot/captcha_solver.py`:
+- `betlo/captcha_solver.py`:
   - Added `_open_image_with_default_app()` method
   - Updated `_solve_manually()` to auto-open captcha
   - Added imports: `os`, `platform`, `subprocess`
@@ -488,10 +488,10 @@ After:  ╭───╮         (rounded, modern)
 
 #### Files Modified
 
-- `zefoy_bot/logger.py`:
+- `betlo/logger.py`:
   - Line 151: Banner `box.DOUBLE` → `box.ROUNDED`
   - Line 166: Header `box.HEAVY` → `box.ROUNDED`
-- `zefoy_bot/main.py`:
+- `betlo/main.py`:
   - Line 78: Welcome panel `box.DOUBLE` → `box.ROUNDED`
 
 #### Documentation
@@ -602,10 +602,10 @@ pkill -9 "chromedriver"
 
 - **Files Modified**: 6
   - `fix_chrome.sh`
-  - `zefoy_bot/bot.py` (6 fallback cooldowns)
-  - `zefoy_bot/captcha_solver.py` (auto-open feature)
-  - `zefoy_bot/logger.py` (rounded UI)
-  - `zefoy_bot/main.py` (rounded UI)
+  - `betlo/bot.py` (6 fallback cooldowns)
+  - `betlo/captcha_solver.py` (auto-open feature)
+  - `betlo/logger.py` (rounded UI)
+  - `betlo/main.py` (rounded UI)
   - `config.yaml`
 
 #### Documentation
@@ -667,7 +667,7 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/captcha_solver.py` - Complete OCR overhaul
+- `betlo/captcha_solver.py` - Complete OCR overhaul
 
 #### Documentation
 
@@ -701,7 +701,7 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/bot.py` - AdBlock implementation
+- `betlo/bot.py` - AdBlock implementation
 
 ---
 
@@ -724,7 +724,7 @@ pkill -9 "chromedriver"
 
 #### Files Added
 
-- `zefoy_bot/target_tracker.py` - Complete tracking system
+- `betlo/target_tracker.py` - Complete tracking system
 
 #### Documentation
 
@@ -745,7 +745,7 @@ pkill -9 "chromedriver"
 
 #### Files Added
 
-- `zefoy_bot/service_manager.py`
+- `betlo/service_manager.py`
 
 ---
 
@@ -768,8 +768,8 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/logger.py` - Rich integration
-- `zefoy_bot/main.py` - Interactive menus
+- `betlo/logger.py` - Rich integration
+- `betlo/main.py` - Interactive menus
 
 ---
 
@@ -791,7 +791,7 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/config.py` - YAML handler
+- `betlo/config.py` - YAML handler
 - `config.yaml` - Complete configuration
 
 ---
@@ -817,8 +817,8 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/utils.py` - Time parsing
-- `zefoy_bot/bot.py` - Cooldown handling
+- `betlo/utils.py` - Time parsing
+- `betlo/bot.py` - Cooldown handling
 
 ---
 
@@ -839,7 +839,7 @@ pkill -9 "chromedriver"
 
 #### Files Modified
 
-- `zefoy_bot/bot.py` - Button detection logic
+- `betlo/bot.py` - Button detection logic
 
 ---
 

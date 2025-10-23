@@ -320,7 +320,7 @@ categories **Languages:** Markdown, YAML, Python examples, Shell scripts
 
 1. **Search FAQ:** [FAQ.md](FAQ.md)
 2. **Check Troubleshooting:** Relevant guide above
-3. **Review Logs:** `logs/zefoy_bot_*.log`
+3. **Review Logs:** `logs/betlo_*.log`
 4. **GitHub Issues:** Report problems
 5. **GitHub Discussions:** Ask questions
 

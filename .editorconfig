@@ -45,4 +45,3 @@ indent_style = tab
 # Ignore venv and build directories
 [{venv/**,build/**,dist/**,.git/**}]
 ignore = true
-

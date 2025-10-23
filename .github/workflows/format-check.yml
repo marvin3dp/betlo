@@ -1,0 +1,34 @@
+name: Format Check
+
+on: [push, pull_request]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install formatters
+        run: |
+          pip install black isort autopep8
+
+      - name: Check Python formatting
+        run: |
+          black --check --line-length 100 .
+          isort --check --profile black .
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Prettier
+        run: npm install -g prettier
+
+      - name: Check Markdown/YAML formatting
+        run: prettier --check "**/*.{md,yaml,yml,json}"

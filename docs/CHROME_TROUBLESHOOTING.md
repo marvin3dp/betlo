@@ -18,7 +18,7 @@
 Jalankan script perbaikan otomatis:
 
 ```bash
-cd /home/marvin/Documents/bots
+cd [/path/to]/bots
 bash fix_chrome.sh
 ```
 
@@ -206,7 +206,7 @@ logging:
 ### Langkah 3: Check logs
 
 ```bash
-cat logs/zefoy_bot_*.log | grep -i "chrome\|driver\|error"
+cat logs/betlo_*.log | grep -i "chrome\|driver\|error"
 ```
 
 ### Langkah 4: Manual test ChromeDriver
@@ -378,7 +378,7 @@ pip install --upgrade \
 - [ ] Clean temp files: `rm -rf /tmp/.com.google.Chrome.*`
 - [ ] Install dependencies: `sudo apt-get install libnss3 libgconf-2-4`
 - [ ] Test Chrome manually: `google-chrome --headless about:blank`
-- [ ] Check logs: `cat logs/zefoy_bot_*.log`
+- [ ] Check logs: `cat logs/betlo_*.log`
 - [ ] Try headless mode: Set `browser.headless: true` in config.yaml
 - [ ] Enable DEBUG: Set `logging.level: DEBUG` in config.yaml
 

@@ -103,11 +103,11 @@ box=box.ROUNDED
 
 ## Files Modified
 
-1. **`zefoy_bot/logger.py`**
+1. **`betlo/logger.py`**
    - Line 151: Banner box - `box.DOUBLE` → `box.ROUNDED`
    - Line 166: Header box - `box.HEAVY` → `box.ROUNDED`
 
-2. **`zefoy_bot/main.py`**
+2. **`betlo/main.py`**
    - Line 78: Welcome panel box - `box.DOUBLE` → `box.ROUNDED`
 
 ## Box Style Comparison
@@ -199,7 +199,7 @@ We chose `box.ROUNDED` for:
 Tested with:
 
 ```bash
-python3 -c "from zefoy_bot.logger import BotUI, print_banner; print_banner()"
+python3 -c "from betlo.logger import BotUI, print_banner; print_banner()"
 ```
 
 **Result:** ✅ All boxes show rounded corners correctly

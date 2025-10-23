@@ -340,7 +340,7 @@ Mode agresif sudah optimal untuk kebanyakan captcha.
 Perhatikan success rate dan adjust jika perlu:
 
 ```bash
-tail -f logs/zefoy_bot_*.log | grep "OCR"
+tail -f logs/betlo_*.log | grep "OCR"
 ```
 
 ### 3. Use Debug Mode Sparingly

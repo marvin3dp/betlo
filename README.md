@@ -873,7 +873,7 @@ tesseract --version
 1. **Check logs:**
 
    ```bash
-   tail -f logs/zefoy_bot_*.log
+   tail -f logs/betlo_*.log
    ```
 
 2. **Clean Chrome:**
@@ -896,7 +896,7 @@ tesseract --version
 
 ### Getting Help
 
-1. **Check logs:** `logs/zefoy_bot_YYYYMMDD.log`
+1. **Check logs:** `logs/betlo_YYYYMMDD.log`
 2. **Enable DEBUG mode:** Set `logging.level: DEBUG`
 3. **Check documentation:** See [docs/](docs/) folder
 4. **Review FAQ:** See [FAQ](#-faq) section below

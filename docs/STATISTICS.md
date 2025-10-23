@@ -495,7 +495,7 @@ echo "Views,15000,50000,30%,15" >> stats.csv
 Check logs for detailed stats:
 
 ```bash
-tail -f logs/zefoy_bot_*.log | grep -i "statistics\|progress"
+tail -f logs/betlo_*.log | grep -i "statistics\|progress"
 ```
 
 ---
