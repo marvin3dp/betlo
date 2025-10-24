@@ -1,44 +1,44 @@
 {
-  "last_updated": "2025-10-22T17:28:47.887451",
+  "last_updated": "2025-10-24T13:24:08.373609",
   "services": {
     "Followers": {
-      "target": 1000,
+      "target": 500,
       "per_execution": 50,
       "current": 0,
       "executions": 0
     },
     "Hearts": {
-      "target": 10000,
-      "per_execution": 100,
-      "current": 100,
-      "executions": 1
+      "target": 600,
+      "per_execution": 25,
+      "current": 0,
+      "executions": 3
     },
     "Comments Hearts": {
-      "target": 5000,
-      "per_execution": 50,
+      "target": 700,
+      "per_execution": 25,
       "current": 0,
       "executions": 0
     },
     "Views": {
-      "target": 50000,
-      "per_execution": 1000,
-      "current": 0,
-      "executions": 0
+      "target": 1000,
+      "per_execution": 500,
+      "current": 500,
+      "executions": 1
     },
     "Shares": {
-      "target": 2000,
+      "target": 900,
       "per_execution": 50,
       "current": 0,
       "executions": 0
     },
     "Favorites": {
-      "target": 3000,
+      "target": 800,
       "per_execution": 100,
       "current": 0,
       "executions": 0
     },
     "Live Stream": {
-      "target": 500,
+      "target": 400,
       "per_execution": 50,
       "current": 0,
       "executions": 0

@@ -97,7 +97,7 @@ class ZefoyBot:
                 Align.center(content)
                 if content.plain
                 else Align.center(Text("Initializing...", style="cyan")),
-                title="[bold cyan]🚀 Starting Bot[/bold cyan]",
+                title="[bold cyan]🚀 Starting...[/bold cyan]",
                 title_align="center",
                 border_style="cyan",
                 box=box.ROUNDED,
@@ -108,9 +108,9 @@ class ZefoyBot:
         try:
             with Live(create_status_panel(), console=console, refresh_per_second=4) as live:
                 # Banner is shown once in main.py, no need to show again
-                status_messages.append("[cyan]🤖 Initializing Zefoy Bot...[/cyan]")
+                status_messages.append("[cyan]🤖 Initializing...[/cyan]")
                 live.update(create_status_panel())
-                self.logger.info("Initializing Zefoy Bot...")
+                self.logger.info("Initializing...")
 
                 # Setup browser
                 status_messages.append("[dim]🌐 Setting up browser...[/dim]")
