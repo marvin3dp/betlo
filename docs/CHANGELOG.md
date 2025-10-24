@@ -76,8 +76,8 @@ import betlo
 
 #### Dramatically Improved Commit Speed
 
-**Before:** 2-5 minutes per commit (installing Node.js/Go)
-**After:** 2-5 seconds per commit ⚡
+**Before:** 2-5 minutes per commit (installing Node.js/Go) **After:** 2-5
+seconds per commit ⚡
 
 **Key Improvements:**
 
@@ -140,9 +140,8 @@ import betlo
 
 **Version 3.0.0 Highlights:**
 
-✅ **Package renamed** to `betlo` (breaking change)
-⚡ **10-60x faster commits** with optimized pre-commit
-📚 **Complete documentation** updated across all files
+✅ **Package renamed** to `betlo` (breaking change) ⚡ **10-60x faster commits**
+with optimized pre-commit 📚 **Complete documentation** updated across all files
 🔧 **Zero functional changes** - all features work the same
 
 **Migration Steps:**
