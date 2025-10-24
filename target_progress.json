@@ -11,7 +11,7 @@
       "target": 600,
       "per_execution": 25,
       "current": 0,
-      "executions": 3
+      "executions": 0
     },
     "Comments Hearts": {
       "target": 700,
@@ -22,8 +22,8 @@
     "Views": {
       "target": 1000,
       "per_execution": 500,
-      "current": 500,
-      "executions": 1
+      "current": 0,
+      "executions": 0
     },
     "Shares": {
       "target": 900,
