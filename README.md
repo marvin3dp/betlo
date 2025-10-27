@@ -766,7 +766,10 @@ Result "ab12" appears 2 times → Invalid (numbers) ❌
 | [ZEFOY_HEADLESS_FIX.md](docs/ZEFOY_HEADLESS_FIX.md)               | Fix Zefoy detection (Xvfb)      |
 | [ZEFOY_DETECTION_FIX.md](docs/ZEFOY_DETECTION_FIX.md)             | **Captcha not detected fix** ⚠️ |
 | [VPS_CDP_FIX.md](docs/VPS_CDP_FIX.md)                             | **Runtime.evaluate error** ⚠️   |
-| [CDP_ERROR_FINAL_FIX.md](CDP_ERROR_FINAL_FIX.md)                  | **CDP error suppression** ✅    |
+| [CDP_ERROR_FINAL_FIX.md](docs/CDP_ERROR_FINAL_FIX.md)             | **CDP error suppression** ✅    |
+| [STUCK_HEADLESS_FIX.md](docs/STUCK_HEADLESS_FIX.md)               | **Bot stuck/timeout fix** ✅    |
+| [FINAL_FIXES_v2.md](docs/FINAL_FIXES_v2.md)                       | **All comprehensive fixes** 📚  |
+| [FIXES_SUMMARY.md](docs/FIXES_SUMMARY.md)                         | **Quick fixes summary** 📋      |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature       |
 | [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained       |
 

@@ -174,22 +174,22 @@ class ZefoyBot:
                 self.logger.debug("Checking page ready state...")
                 self._wait_for_page_ready()
 
-                # Extended wait for Zefoy to fully render (especially in headless)
+                # Wait for Zefoy to render (reduced timeouts to prevent stuck)
                 if self.headless or self._using_xvfb:
-                    self.logger.info("⏳ Headless/Xvfb mode: Extended wait for full rendering...")
-                    random_delay(10, 12)  # Even longer for Zefoy in headless
+                    self.logger.info("⏳ Waiting for page to fully render...")
+                    random_delay(8, 10)  # Reduced from 10-12
                 else:
                     self.logger.info("⏳ Waiting for dynamic content...")
-                    random_delay(5, 7)
+                    random_delay(4, 6)  # Reduced from 5-7
 
-                # Additional wait specifically for Zefoy's dynamic content
+                # Additional wait for dynamic elements
                 self.logger.debug("Waiting for Zefoy dynamic elements...")
-                random_delay(3, 5)
+                random_delay(2, 4)  # Reduced from 3-5
 
-                # Force a scroll to trigger lazy-loaded elements (important for headless)
+                # Force scroll to trigger lazy-loaded elements
                 try:
                     self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    random_delay(1, 2)
+                    random_delay(1, 1.5)
                     self.driver.execute_script("window.scrollTo(0, 0);")
                     self.logger.debug("✓ Page scrolled to trigger lazy-loaded elements")
                 except Exception:
@@ -212,36 +212,63 @@ class ZefoyBot:
 
                 self.captcha_solver = CaptchaSolver(self.driver, self.config, self.logger)
 
-                # Try multiple times to detect captcha (Zefoy loads slowly, especially in headless)
-                max_attempts = 5 if (self.headless or self._using_xvfb) else 3
+                # Try multiple times to detect captcha (with reasonable timeouts to prevent stuck)
+                max_attempts = 3
                 captcha_found = False
+                timeout_per_attempt = 5  # Reduced to prevent stuck
 
                 self.logger.info(
-                    f"🔍 Detecting captcha ({max_attempts} attempts, 10s timeout each)..."
+                    f"🔍 Detecting captcha ({max_attempts} attempts, {timeout_per_attempt}s timeout each)..."
                 )
+
+                import time
+
+                detection_start_time = time.time()
+                max_total_time = 30  # Emergency timeout: 30 seconds total
+
                 for attempt in range(max_attempts):
+                    # Check emergency timeout
+                    elapsed = time.time() - detection_start_time
+                    if elapsed > max_total_time:
+                        self.logger.warning(f"⚠️  Detection timeout ({max_total_time}s exceeded)")
+                        break
+
+                    # Update UI with progress
+                    status_messages[
+                        -1
+                    ] = f"[cyan]🔐 Checking captcha (attempt {attempt + 1}/{max_attempts})...[/cyan]"
+                    live.update(create_status_panel())
+
                     self.logger.debug(f"Captcha detection attempt {attempt + 1}/{max_attempts}...")
 
-                    # Check with generous timeout
-                    if self.captcha_solver.is_captcha_present(timeout=10):
+                    # Check with reasonable timeout to prevent stuck
+                    if self.captcha_solver.is_captcha_present(timeout=timeout_per_attempt):
                         captcha_found = True
                         self.logger.info(f"✓ Captcha detected on attempt {attempt + 1}")
                         break
 
-                    # If not found, wait and try again
+                    # If not found, wait briefly and try again
                     if attempt < max_attempts - 1:
-                        wait_time = 5 if (self.headless or self._using_xvfb) else 3
-                        self.logger.debug(
-                            f"Captcha not found yet, waiting {wait_time}s before retry..."
-                        )
-                        random_delay(wait_time, wait_time + 2)
+                        wait_time = 2
 
-                        # Refresh page check (ensure page is still responsive)
+                        # Update UI during wait
+                        status_messages[
+                            -1
+                        ] = f"[yellow]⏳ Retry in {wait_time}s... ({attempt + 2}/{max_attempts})[/yellow]"
+                        live.update(create_status_panel())
+
+                        self.logger.debug(
+                            f"Captcha not found, waiting {wait_time}s before retry..."
+                        )
+                        random_delay(wait_time, wait_time + 1)
+
+                        # Quick page check
                         try:
                             current_url = self.driver.current_url
                             self.logger.debug(f"Current URL: {current_url}")
                         except Exception as e:
-                            self.logger.warning(f"Page check failed: {e}")
+                            self.logger.warning(f"Page unresponsive: {e}")
+                            break  # Stop if page is broken
 
                 if captcha_found:
                     status_messages.append("[yellow]⚠ Captcha detected! Solving...[/yellow]")
@@ -300,10 +327,15 @@ class ZefoyBot:
                         )
                         self.logger.info("   4. Run test: ./test_zefoy.sh")
 
-                    status_messages.append(
-                        "[yellow]⚠ No captcha detected - Check debug folder[/yellow]"
-                    )
+                    status_messages.append("[red]✗ Captcha not found - Check debug/ & logs[/red]")
                     live.update(create_status_panel())
+
+                    # Stop bot - cannot continue without captcha
+                    self.logger.error("")
+                    self.logger.error("❌ Cannot continue without captcha detection")
+                    self.logger.error("   Bot will stop now")
+                    random_delay(3, 4)
+                    return False
 
                 # Initialize target tracker
                 status_messages.append("[dim]📊 Initializing target tracker...[/dim]")
