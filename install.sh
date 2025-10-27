@@ -193,11 +193,60 @@ if [ "$OS" = "macOS" ]; then
         echo "macOS: brew install --cask google-chrome"
     fi
 else
+    # Linux - check and auto-install if needed
     if command -v google-chrome &> /dev/null || command -v chromium-browser &> /dev/null || command -v chromium &> /dev/null; then
-        echo "✓ Chrome/Chromium found"
+        CHROME_VERSION=$(google-chrome --version 2> /dev/null || chromium --version 2> /dev/null || chromium-browser --version 2> /dev/null || echo "unknown")
+        echo "✓ Chrome/Chromium found: $CHROME_VERSION"
     else
-        echo "⚠ Chrome/Chromium not found. Please install Google Chrome."
-        echo "Ubuntu/Debian: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb"
+        echo "⚠ Chrome/Chromium not found!"
+        echo ""
+
+        if command -v apt &> /dev/null; then
+            echo "Installing Google Chrome automatically..."
+            echo ""
+
+            # Download and install Chrome
+            TEMP_DEB="/tmp/google-chrome-stable_current_amd64.deb"
+
+            if wget -q -O "$TEMP_DEB" https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; then
+                echo "Chrome downloaded, installing dependencies..."
+
+                # Install required dependencies for Chrome on VPS/server
+                sudo apt install -y \
+                    libnss3 \
+                    libgconf-2-4 \
+                    libxss1 \
+                    libappindicator3-1 \
+                    libasound2 \
+                    libatk-bridge2.0-0 \
+                    libgtk-3-0 \
+                    xvfb \
+                    fonts-liberation
+
+                echo "Installing Chrome..."
+                sudo apt install -y "$TEMP_DEB"
+
+                if [ $? -eq 0 ]; then
+                    rm -f "$TEMP_DEB"
+                    echo "✓ Google Chrome installed successfully"
+                    google-chrome --version
+                else
+                    echo "✗ Failed to install Chrome"
+                    echo "Please install manually:"
+                    echo "  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                    echo "  sudo apt install ./google-chrome-stable_current_amd64.deb"
+                    echo ""
+                    echo "Or install Chromium as alternative:"
+                    echo "  sudo apt install chromium-browser"
+                fi
+            else
+                echo "✗ Failed to download Chrome"
+                echo "Try installing Chromium instead:"
+                echo "  sudo apt install chromium-browser"
+            fi
+        else
+            echo "Please install Google Chrome manually"
+        fi
     fi
 fi
 

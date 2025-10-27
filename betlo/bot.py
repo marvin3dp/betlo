@@ -239,6 +239,40 @@ class ZefoyBot:
         except Exception as e:
             self.logger.debug(f"Could not kill zombie processes: {e}")
 
+    def _find_chrome_binary(self):
+        """Find Chrome binary path (especially for VPS/servers)"""
+        import os
+        import shutil
+
+        # Common Chrome binary locations (Linux VPS)
+        chrome_paths = [
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable",
+            "/usr/bin/chromium",
+            "/usr/bin/chromium-browser",
+            "/snap/bin/chromium",
+            "/usr/local/bin/google-chrome",
+            "/opt/google/chrome/google-chrome",
+            "/opt/google/chrome/chrome",
+        ]
+
+        # Try to find using 'which' command
+        try:
+            for cmd in ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]:
+                path = shutil.which(cmd)
+                if path and os.path.isfile(path):
+                    return path
+        except Exception:
+            pass
+
+        # Check common paths
+        for path in chrome_paths:
+            if os.path.isfile(path):
+                return path
+
+        # If not found, return None (will use system default)
+        return None
+
     def _setup_driver(self):
         """Setup undetected Chrome driver with retry mechanism"""
         max_retries = 3
@@ -253,6 +287,14 @@ class ZefoyBot:
                     self._kill_zombie_chrome_processes()
 
                 options = uc.ChromeOptions()
+
+                # Find Chrome binary (especially important for VPS/servers)
+                chrome_binary = self._find_chrome_binary()
+                if chrome_binary:
+                    options.binary_location = chrome_binary
+                    self.logger.debug(f"Using Chrome binary: {chrome_binary}")
+                else:
+                    self.logger.warning("Chrome binary not explicitly set, using system default")
 
                 # Basic options
                 if self.headless:
@@ -384,7 +426,27 @@ class ZefoyBot:
                     raise
 
             except Exception as e:
-                self.logger.error(f"Unexpected error setting up driver: {str(e)}")
+                error_msg = str(e)
+                self.logger.error(f"Unexpected error setting up driver: {error_msg}")
+
+                # Check if it's a Chrome binary issue
+                if "Binary Location" in error_msg or "chrome not found" in error_msg.lower():
+                    self.logger.error("Chrome browser not found on this system!")
+                    self.logger.error("Solutions for VPS/Server:")
+                    self.logger.error("1. Install Chrome:")
+                    self.logger.error(
+                        "   wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                    )
+                    self.logger.error(
+                        "   sudo apt install ./google-chrome-stable_current_amd64.deb"
+                    )
+                    self.logger.error("   OR")
+                    self.logger.error("   sudo apt install chromium-browser")
+                    self.logger.error("")
+                    self.logger.error("2. Verify installation:")
+                    self.logger.error("   which google-chrome")
+                    self.logger.error("   google-chrome --version")
+
                 if self.driver:
                     try:
                         self.driver.quit()

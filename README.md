@@ -247,12 +247,20 @@ cd bots
 
 ### Step 3: Install Python Dependencies
 
-**Automated Installation:**
+**Automated Installation (Recommended):**
 
 ```bash
 chmod +x install.sh
 ./install.sh
 ```
+
+The `install.sh` script will automatically:
+
+- ✓ Install `python3-venv` and `python3-full` (Debian/Ubuntu)
+- ✓ Install Google Chrome + dependencies
+- ✓ Create virtual environment
+- ✓ Install all Python packages
+- ✓ Setup required directories
 
 **Manual Installation:**
 
@@ -261,6 +269,26 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+### 🖥️ VPS/Server Installation
+
+For VPS or headless servers, use the automated installer:
+
+```bash
+./install.sh
+```
+
+If you get **"Binary Location Must be a String"** error, install Chrome:
+
+```bash
+./install_chrome_vps.sh
+```
+
+**Important for VPS:**
+
+- Set `headless: true` in `config.yaml`
+- Minimum 2GB RAM required
+- See [VPS_SETUP.md](docs/VPS_SETUP.md) for complete guide
 
 **Key Dependencies:**
 
@@ -711,12 +739,14 @@ Result "ab12" appears 2 times → Invalid (numbers) ❌
 
 | Guide                                                             | Topic                          |
 | ----------------------------------------------------------------- | ------------------------------ |
+| [VPS_SETUP.md](docs/VPS_SETUP.md)                                 | **VPS/Server setup guide**     |
+| [INSTALLATION.md](docs/INSTALLATION.md)                           | Detailed installation guide    |
+| [CHROME_TROUBLESHOOTING.md](docs/CHROME_TROUBLESHOOTING.md)       | Chrome/ChromeDriver issues     |
 | [OCR_TROUBLESHOOTING.md](docs/OCR_TROUBLESHOOTING.md)             | OCR debugging and optimization |
 | [AGGRESSIVE_OCR_MODE.md](docs/AGGRESSIVE_OCR_MODE.md)             | AGGRESSIVE mode detailed guide |
 | [HEADLESS_MODE_GUIDE.md](docs/HEADLESS_MODE_GUIDE.md)             | Running in headless mode       |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature      |
 | [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained      |
-| [CHROME_TROUBLESHOOTING.md](docs/CHROME_TROUBLESHOOTING.md)       | Chrome/ChromeDriver issues     |
 
 ### Quick References
 
