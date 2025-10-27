@@ -51,11 +51,33 @@ else
     if [ "$OS" = "macOS" ]; then
         echo "macOS: brew install python3 (includes venv)"
     else
-        echo "Ubuntu/Debian: sudo apt install python3-venv"
+        echo "Ubuntu/Debian: sudo apt install python3-venv python3-full"
         echo "Fedora: sudo dnf install python3-venv"
         echo "Arch: sudo pacman -S python-virtualenv"
     fi
     exit 1
+fi
+
+# Check for python3-full on Debian/Ubuntu (required for Python 3.12+)
+if [ "$OS" = "Linux" ]; then
+    if command -v dpkg &> /dev/null; then
+        echo ""
+        echo "🔍 Checking python3-full (required for Python 3.12+)..."
+        if dpkg -l | grep -q "python3-full"; then
+            echo "✓ python3-full is installed"
+        else
+            echo "✗ python3-full is not installed!"
+            echo ""
+            echo "This is required for Python 3.12+ on Debian/Ubuntu"
+            echo "Install it with:"
+            echo "  sudo apt install python3-full"
+            echo ""
+            read -p "Continue anyway? (not recommended) [y/N]: " continue_anyway
+            if [[ ! $continue_anyway =~ ^[Yy]$ ]]; then
+                exit 1
+            fi
+        fi
+    fi
 fi
 
 # Create virtual environment
@@ -69,14 +91,39 @@ if [ -d "venv" ]; then
         rm -rf venv
         echo "Creating new virtual environment..."
         python3 -m venv venv
+        if [ $? -ne 0 ]; then
+            echo "✗ Failed to create virtual environment"
+            echo "Make sure python3-full is installed: sudo apt install python3-full"
+            exit 1
+        fi
         echo "✓ Virtual environment recreated"
     else
         echo "Using existing virtual environment"
     fi
 else
     python3 -m venv venv
+    if [ $? -ne 0 ]; then
+        echo "✗ Failed to create virtual environment"
+        echo "Make sure python3-full is installed: sudo apt install python3-full"
+        exit 1
+    fi
     echo "✓ Virtual environment created"
 fi
+
+# Verify venv was created properly
+if [ ! -f "venv/bin/pip" ]; then
+    echo "✗ Virtual environment appears incomplete (pip not found)"
+    echo "This usually means python3-full is not installed."
+    echo ""
+    echo "Please run:"
+    echo "  sudo apt install python3-full"
+    echo ""
+    echo "Then delete the venv directory and run this script again:"
+    echo "  rm -rf venv"
+    echo "  ./install.sh"
+    exit 1
+fi
+echo "✓ Virtual environment verified"
 
 # Install dependencies using venv pip directly
 echo ""
