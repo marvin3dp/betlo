@@ -239,6 +239,38 @@ class ZefoyBot:
         except Exception as e:
             self.logger.debug(f"Could not kill zombie processes: {e}")
 
+    def _check_shm_size(self):
+        """Check /dev/shm size and warn if too small for Chrome"""
+        try:
+            import platform
+            import subprocess
+
+            if platform.system() != "Linux":
+                return
+
+            result = subprocess.run(
+                ["df", "-h", "/dev/shm"], capture_output=True, text=True, timeout=5
+            )
+
+            if result.returncode == 0:
+                lines = result.stdout.strip().split("\n")
+                if len(lines) >= 2:
+                    parts = lines[1].split()
+                    if len(parts) >= 2:
+                        size = parts[1]
+                        self.logger.debug(f"/dev/shm size: {size}")
+
+                        # Warn if less than 64MB
+                        if "K" in size or (size.endswith("M") and int(size[:-1]) < 64):
+                            self.logger.warning(
+                                f"⚠ /dev/shm size is small ({size}). Chrome may crash."
+                            )
+                            self.logger.warning(
+                                "  Consider increasing it or use --disable-dev-shm-usage"
+                            )
+        except Exception as e:
+            self.logger.debug(f"Could not check /dev/shm size: {e}")
+
     def _find_chrome_binary(self):
         """Find Chrome binary path (especially for VPS/servers)"""
         import os
@@ -285,6 +317,7 @@ class ZefoyBot:
                 # Clean up zombie processes on first attempt
                 if attempt == 1:
                     self._kill_zombie_chrome_processes()
+                    self._check_shm_size()
 
                 options = uc.ChromeOptions()
 
@@ -307,9 +340,35 @@ class ZefoyBot:
                 options.add_argument("--disable-gpu")  # Prevent GPU-related crashes
                 options.add_argument("--disable-software-rasterizer")
 
-                # Disable notifications and other popups
+                # VPS/Server stability improvements
+                options.add_argument("--disable-setuid-sandbox")
+                options.add_argument("--disable-accelerated-2d-canvas")
+                options.add_argument("--disable-extensions")
+                options.add_argument("--disable-default-apps")
+                options.add_argument("--disable-infobars")
+                options.add_argument("--disable-logging")
+                options.add_argument("--disable-login-animations")
                 options.add_argument("--disable-notifications")
                 options.add_argument("--disable-popup-blocking")
+                options.add_argument("--disable-translate")
+                options.add_argument("--disable-web-security")
+                options.add_argument("--no-first-run")
+                options.add_argument("--no-default-browser-check")
+                options.add_argument("--ignore-certificate-errors")
+                options.add_argument("--disable-application-cache")
+                options.add_argument("--disk-cache-size=0")
+
+                # Disable debugging port to avoid connection issues
+                options.add_argument("--remote-debugging-port=0")
+
+                # Use single process if on very limited VPS (can be toggled)
+                if self.config.get("browser.single_process", False):
+                    options.add_argument("--single-process")
+                    self.logger.debug("Running Chrome in single-process mode (low RAM VPS)")
+
+                # Crash handling
+                options.add_argument("--disable-crash-reporter")
+                options.add_argument("--disable-breakpad")
 
                 # Aggressive ad-blocking arguments
                 if self.config.use_adblock:
@@ -394,8 +453,20 @@ class ZefoyBot:
             except WebDriverException as e:
                 error_msg = str(e)
                 self.logger.warning(
-                    f"Chrome connection failed (attempt {attempt}/{max_retries}): {error_msg[:100]}"
+                    f"⚠ Chrome connection failed (attempt {attempt}/{max_retries}): {error_msg[:150]}"
                 )
+
+                # Check for specific error types and provide targeted solutions
+                if (
+                    "chrome not reachable" in error_msg.lower()
+                    or "cannot connect to chrome" in error_msg.lower()
+                ):
+                    self.logger.warning("Chrome started but crashed or became unreachable")
+                    if attempt == 1:
+                        self.logger.info("💡 VPS/Server tips:")
+                        self.logger.info("  - Ensure headless mode is enabled in config.yaml")
+                        self.logger.info("  - Check /dev/shm size: df -h /dev/shm")
+                        self.logger.info("  - Verify Chrome is installed: google-chrome --version")
 
                 # Cleanup on error
                 if self.driver:
@@ -407,22 +478,38 @@ class ZefoyBot:
 
                 # If this is not the last attempt, wait and retry
                 if attempt < max_retries:
-                    self.logger.info(f"Retrying in {retry_delay} seconds...")
+                    self.logger.info(f"🔄 Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
                     # Kill any remaining processes
                     self._kill_zombie_chrome_processes()
                 else:
                     # Last attempt failed
-                    self.logger.error("Failed to initialize Chrome after all retries")
-                    self.logger.error("Possible solutions:")
+                    self.logger.error("❌ Failed to initialize Chrome after all retries")
+                    self.logger.error("")
+                    self.logger.error("🔧 VPS/Server Solutions:")
+                    self.logger.error("1. Verify Chrome installation:")
+                    self.logger.error("   google-chrome --version")
+                    self.logger.error("   which google-chrome")
+                    self.logger.error("")
+                    self.logger.error("2. Enable headless mode in config.yaml:")
+                    self.logger.error("   browser:")
+                    self.logger.error("     headless: true")
+                    self.logger.error("")
+                    self.logger.error("3. Check /dev/shm size (should be >64MB):")
+                    self.logger.error("   df -h /dev/shm")
                     self.logger.error(
-                        "1. Install/Update Chrome: sudo apt install google-chrome-stable"
+                        "   # If too small, increase it or --disable-dev-shm-usage is already set"
                     )
-                    self.logger.error("2. Kill zombie processes: pkill -f chrome")
-                    self.logger.error(
-                        "3. Update chromedriver: pip install --upgrade undetected-chromedriver"
-                    )
-                    self.logger.error("4. Check Chrome is in PATH: which google-chrome")
+                    self.logger.error("")
+                    self.logger.error("4. Install missing dependencies:")
+                    self.logger.error("   ./install_chrome_vps.sh")
+                    self.logger.error("")
+                    self.logger.error("5. Kill zombie processes:")
+                    self.logger.error("   pkill -9 -f chrome")
+                    self.logger.error("   pkill -9 -f chromedriver")
+                    self.logger.error("")
+                    self.logger.error("6. Try running with Xvfb:")
+                    self.logger.error("   xvfb-run python run.py")
                     raise
 
             except Exception as e:

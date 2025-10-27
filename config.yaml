@@ -2,6 +2,7 @@ active_service: null
 browser:
   disable_images: false
   headless: false
+  single_process: false # Set to true for very low RAM VPS (<1GB), may reduce stability
   use_adblock: true
   user_agent:
     Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0_0) AppleWebKit/537.36 (KHTML,

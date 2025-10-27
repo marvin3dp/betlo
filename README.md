@@ -284,10 +284,17 @@ If you get **"Binary Location Must be a String"** error, install Chrome:
 ./install_chrome_vps.sh
 ```
 
+**Check VPS Environment:**
+
+```bash
+./check_vps.sh  # Verify everything is configured correctly
+```
+
 **Important for VPS:**
 
 - Set `headless: true` in `config.yaml`
 - Minimum 2GB RAM required
+- /dev/shm should be >64MB (check with `df -h /dev/shm`)
 - See [VPS_SETUP.md](docs/VPS_SETUP.md) for complete guide
 
 **Key Dependencies:**

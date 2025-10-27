@@ -59,6 +59,9 @@ cd bots
 
 # Run installer (akan auto-install Chrome, python3-full, dll)
 ./install.sh
+
+# Verify VPS environment is ready
+./check_vps.sh
 ```
 
 Script ini akan otomatis:
@@ -68,6 +71,18 @@ Script ini akan otomatis:
 - ✓ Create virtual environment
 - ✓ Install Python packages
 - ✓ Setup directories
+
+**Check VPS Script** (`check_vps.sh`) akan verify:
+
+- ✓ Chrome installation
+- ✓ Python version
+- ✓ Virtual environment
+- ✓ RAM availability
+- ✓ /dev/shm size
+- ✓ Disk space
+- ✓ Headless mode config
+- ✓ No zombie processes
+- ✓ Python packages installed
 
 ---
 
@@ -193,7 +208,59 @@ google-chrome --version
 ./install_chrome_vps.sh
 ```
 
-### 2. Display/GPU Errors
+### 2. Chrome Not Reachable
+
+**Error:** `cannot connect to chrome at 127.0.0.1:XXXXX` atau
+`chrome not reachable`
+
+**Penyebab:** Chrome crash saat startup atau tidak bisa berjalan di VPS
+environment
+
+**Solusi:**
+
+```bash
+# 1. Pastikan headless mode aktif
+nano config.yaml
+# Set: headless: true
+
+# 2. Check /dev/shm size (should be >64MB)
+df -h /dev/shm
+
+# Jika terlalu kecil (<64MB), increase size:
+sudo mount -o remount,size=256M /dev/shm
+
+# Make permanent (add to /etc/fstab):
+echo "tmpfs /dev/shm tmpfs defaults,size=256M 0 0" | sudo tee -a /etc/fstab
+
+# 3. Kill zombie Chrome processes
+pkill -9 -f chrome
+pkill -9 -f chromedriver
+rm -rf /tmp/.com.google.Chrome.*
+
+# 4. Install/verify Chrome dependencies
+./install_chrome_vps.sh
+
+# 5. Try running with Xvfb (virtual display)
+sudo apt install xvfb
+xvfb-run python run.py
+
+# 6. For very low RAM VPS (<1GB), enable single-process mode
+nano config.yaml
+# Add: single_process: true
+# WARNING: Less stable, only use if necessary
+```
+
+**Advanced: Check Chrome startup manually**
+
+```bash
+# Test Chrome startup
+google-chrome --headless --no-sandbox --disable-dev-shm-usage --dump-dom https://google.com
+
+# If this fails, check logs:
+google-chrome --headless --no-sandbox --disable-dev-shm-usage --enable-logging --v=1 2>&1 | tee chrome_debug.log
+```
+
+### 3. Display/GPU Errors
 
 **Error:** `Could not start Chrome` atau GPU-related errors
 
@@ -532,6 +599,8 @@ Before running bot on VPS, verify:
 - [ ] Config set to headless: `grep headless config.yaml`
 - [ ] Enough RAM: `free -h` (minimum 2GB)
 - [ ] Enough storage: `df -h` (minimum 5GB free)
+- [ ] /dev/shm size OK: `df -h /dev/shm` (minimum 64MB, recommended 256MB)
+- [ ] No zombie Chrome: `ps aux | grep chrome` (should be empty)
 - [ ] Bot runs without errors: `python run.py`
 
 ---
@@ -549,6 +618,9 @@ Before running bot on VPS, verify:
 ```bash
 # Install bot (first time)
 ./install.sh
+
+# Check VPS environment
+./check_vps.sh
 
 # Install Chrome only
 ./install_chrome_vps.sh
