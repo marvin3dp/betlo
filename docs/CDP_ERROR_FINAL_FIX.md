@@ -7,7 +7,7 @@ Xvfb **Date:** October 27, 2025 **Status:** ✅ FIXED - 3 Layers of Protection
 
 ## 🐛 The Problem
 
-User reported CDP error masih muncul saat running `./run_xvfb.sh`:
+User reported CDP error masih muncul saat running `./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`:
 
 ```
 WARNING ⚠ ⚠ Chrome connection failed (attempt 1/3):
@@ -183,7 +183,7 @@ Legitimate retry for real errors. ✅
 
 ## 🚀 What You'll See Now
 
-### With Xvfb (./run_xvfb.sh)
+### With Xvfb (./venv.sh  # Smart auto-detect (uses Xvfb on VPS))
 
 **If CDP Works:**
 
@@ -254,7 +254,7 @@ User knows what's happening. ✅
 ### Test 1: Xvfb Mode
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Expected (CDP Available):**

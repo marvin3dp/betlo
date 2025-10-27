@@ -173,7 +173,7 @@ if not captcha_found:
 Pure headless mode has LOW success rate (60-70%) with Zefoy!
 
 🔧 RECOMMENDED SOLUTION:
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
    Xvfb provides 95%+ success rate!
    (Virtual display mode)
@@ -207,7 +207,7 @@ python run.py
 ### Test 2: Xvfb Mode (Recommended)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Expected:**
@@ -345,7 +345,7 @@ if not captcha_found:
 Pure headless mode has LOW success rate (60-70%) with Zefoy!
 
 🔧 RECOMMENDED SOLUTION:
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Action:** Run bot with Xvfb for 95%+ success rate!

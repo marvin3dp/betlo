@@ -215,8 +215,8 @@ logging:
 nano config.yaml
 # Change: headless: false
 
-# Run with Xvfb script
-./run_xvfb.sh
+# Run with smart auto-detect (uses Xvfb on VPS)
+./venv.sh
 ```
 
 **Option B: Pure Headless (60-80% success rate):**
@@ -267,8 +267,8 @@ sudo apt install xvfb
 nano config.yaml
 # Set: headless: false
 
-# Run with Xvfb
-./run_xvfb.sh
+# Run with smart auto-detect (uses Xvfb on VPS)
+./venv.sh
 ```
 
 **Why This Works:**
@@ -359,8 +359,8 @@ rm -rf /tmp/.com.google.Chrome.*
 # 4. Install/verify Chrome dependencies & Xvfb
 ./install.sh  # Smart installer (auto-installs everything)
 
-# 5. Try running with Xvfb (virtual display)
-./run_xvfb.sh  # Recommended method
+# 5. Run bot (auto-detects & uses Xvfb)
+./venv.sh  # Unified smart runner (recommended)
 
 # 6. For very low RAM VPS (<1GB), enable single-process mode
 nano config.yaml
@@ -406,7 +406,6 @@ sudo -v
 chmod +x install.sh
 chmod +x run.py
 chmod +x venv.sh
-chmod +x run_xvfb.sh
 
 # Jangan run bot sebagai root!
 # Selalu run sebagai user biasa
@@ -741,19 +740,16 @@ Before running bot on VPS, verify:
 # Check VPS environment
 ./check_vps.sh
 
-# Quick Start (Smart Auto-Detect)
-./venv.sh  # Auto-detects environment & runs optimally
+# Quick Start (Unified Smart Runner - RECOMMENDED)
+./venv.sh  # Auto-detects environment, uses Xvfb on VPS
 
-# Run bot with Xvfb (RECOMMENDED - best for Zefoy)
-./run_xvfb.sh
-
-# Run bot normally (pure headless)
+# Alternative: Manual mode
 source venv/bin/activate
 python run.py
 
 # Run with screen (for 24/7)
 screen -S bot
-./venv.sh  # or: ./run_xvfb.sh
+./venv.sh  # Smart auto-detect
 # Detach: Ctrl+A then D
 
 # Check logs

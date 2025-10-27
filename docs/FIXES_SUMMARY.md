@@ -260,7 +260,7 @@ python run.py
 ### Test 3: Xvfb Mode (Recommended)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Expected Result:**
@@ -366,7 +366,7 @@ Should contain:
 1. **🥇 Use Xvfb (95%+ success):**
 
    ```bash
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
    ```
 
    - Virtual display
@@ -439,7 +439,7 @@ If bot continues = **Fix is working!** ✅
    - Screenshot of what browser sees
 
 3. **Solutions:**
-   - **Best:** Use Xvfb → `./run_xvfb.sh`
+   - **Best:** Use Xvfb → `./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`
    - Check if Cloudflare blocking (see screenshot)
    - Verify Zefoy URL correct in config.yaml
    - Check /dev/shm size: `df -h /dev/shm` (should be > 500MB)
@@ -495,7 +495,7 @@ If bot continues = **Fix is working!** ✅
 
 **Semua issue sudah fixed dengan graceful fallback!** 🎉
 
-**Recommended untuk VPS: `./run_xvfb.sh`** 🚀
+**Recommended untuk VPS: `./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`** 🚀
 
 ---
 

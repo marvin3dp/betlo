@@ -99,16 +99,55 @@ else
     if command -v Xvfb &> /dev/null; then
         echo -e "${GREEN}✓ Xvfb detected${NC}"
         echo ""
-        echo -e "${CYAN}🚀 Redirecting to Xvfb mode...${NC}"
+        echo -e "${CYAN}🚀 Starting Xvfb virtual display...${NC}"
         echo -e "${BLUE}   (Virtual display for best VPS compatibility)${NC}"
         echo ""
+
+        # Set display for Xvfb
+        export DISPLAY=:99
+
+        # Kill any existing Xvfb on display :99
+        pkill -f "Xvfb :99" 2> /dev/null
+
+        # Start Xvfb (suppress xkbcomp warnings - they are harmless)
+        Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset 2> /dev/null &
+        XVFB_PID=$!
+
+        # Wait for Xvfb to start
         sleep 2
 
-        # Deactivate venv first (run_xvfb.sh will activate it)
-        deactivate
+        # Check if Xvfb is running
+        if ps -p $XVFB_PID > /dev/null; then
+            echo -e "${GREEN}✓ Xvfb running on display :99${NC}"
+            echo -e "${BLUE}  (Note: xkbcomp warnings are harmless and suppressed)${NC}"
+            echo ""
 
-        # Run with Xvfb
-        exec ./run_xvfb.sh
+            # Check config headless setting
+            HEADLESS=$(grep -A1 "^browser:" config.yaml 2>/dev/null | grep "headless:" | awk '{print $2}')
+            if [ "$HEADLESS" == "true" ]; then
+                echo -e "${YELLOW}⚠️  Note: config.yaml has headless: true${NC}"
+                echo -e "${BLUE}💡 For best Xvfb results, set headless: false${NC}"
+                echo -e "${BLUE}   Xvfb provides virtual display for visible mode${NC}"
+                echo ""
+            fi
+
+            echo -e "${CYAN}🤖 Starting bot with virtual display...${NC}"
+            echo ""
+
+            # Run bot with Xvfb
+            python run.py
+
+            # Cleanup Xvfb on exit
+            echo ""
+            echo -e "${CYAN}🧹 Cleaning up Xvfb...${NC}"
+            kill $XVFB_PID 2> /dev/null
+            echo -e "${GREEN}✓ Xvfb stopped${NC}"
+        else
+            echo -e "${RED}✗ Failed to start Xvfb${NC}"
+            echo -e "${YELLOW}Falling back to headless mode...${NC}"
+            echo ""
+            python run.py
+        fi
 
     else
         echo -e "${YELLOW}⚠️  Xvfb not installed${NC}"
@@ -129,38 +168,65 @@ else
                     echo -e "${CYAN}🚀 Starting with Xvfb...${NC}"
                     echo ""
 
-                    # Deactivate venv
-                    deactivate
+                    # Set display for Xvfb
+                    export DISPLAY=:99
 
-                    # Run with Xvfb
-                    exec ./run_xvfb.sh
+                    # Kill any existing Xvfb on display :99
+                    pkill -f "Xvfb :99" 2> /dev/null
+
+                    # Start Xvfb
+                    Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset 2> /dev/null &
+                    XVFB_PID=$!
+                    sleep 2
+
+                    if ps -p $XVFB_PID > /dev/null; then
+                        echo -e "${GREEN}✓ Xvfb running on display :99${NC}"
+                        echo ""
+                        echo -e "${CYAN}🤖 Starting bot...${NC}"
+                        echo ""
+
+                        python run.py
+
+                        # Cleanup
+                        echo ""
+                        echo -e "${CYAN}🧹 Cleaning up Xvfb...${NC}"
+                        kill $XVFB_PID 2> /dev/null
+                        echo -e "${GREEN}✓ Xvfb stopped${NC}"
+                    else
+                        echo -e "${RED}✗ Failed to start Xvfb${NC}"
+                        echo -e "${YELLOW}Falling back to headless mode...${NC}"
+                        echo ""
+                        python run.py
+                    fi
                 fi
             fi
         fi
 
         # Fallback to headless mode if Xvfb not available
-        echo -e "${YELLOW}⚠️  Xvfb not available - falling back to headless mode${NC}"
-        echo -e "${YELLOW}   (Lower success rate: 60-80%)${NC}"
-        echo ""
-        echo -e "${BLUE}💡 For better results, install Xvfb manually:${NC}"
-        echo "   sudo apt-get install xvfb"
-        echo "   Then run: ./run_xvfb.sh"
-        echo ""
+        if ! command -v Xvfb &> /dev/null; then
+            echo -e "${YELLOW}⚠️  Xvfb not available - falling back to headless mode${NC}"
+            echo -e "${YELLOW}   (Lower success rate: 60-80%)${NC}"
+            echo ""
+            echo -e "${BLUE}💡 For better results, install Xvfb manually:${NC}"
+            echo "   sudo apt-get install xvfb"
+            echo "   Then re-run: ./venv.sh"
+            echo ""
 
-        read -p "Continue with headless mode? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo "Cancelled."
-            deactivate
-            exit 0
+            read -p "Continue with headless mode? (y/n) " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo "Cancelled."
+                deactivate
+                exit 0
+            fi
+
+            echo ""
+            echo -e "${CYAN}🚀 Starting in headless mode...${NC}"
+            echo ""
+
+            # Run in headless mode
+            python run.py
         fi
-
-        echo ""
-        echo -e "${CYAN}🚀 Starting in headless mode...${NC}"
-        echo ""
-
-        # Run in headless mode
-        python run.py
     fi
 fi
 

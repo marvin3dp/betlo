@@ -17,7 +17,7 @@ are not detected.
 **Use Xvfb for best Zefoy compatibility:**
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 This provides a virtual display which gives **95%+ success rate** with Zefoy.
@@ -89,7 +89,7 @@ Look for:
 2. **Use Xvfb instead of pure headless:**
 
    ```bash
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
    ```
 
 3. **Check if blocked by Cloudflare:**
@@ -267,7 +267,7 @@ If still failing, you can try removing some arguments in `betlo/bot.py`.
 ### 1. Use Xvfb (Most Reliable)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ### 2. Check System Requirements

@@ -294,13 +294,12 @@ For VPS or headless servers, use the **smart automated installer**:
 
 **Important for VPS:**
 
-- **⚠️ Zefoy Detection Issue?** Use Xvfb for 95%+ reliability!
+- **⚠️ Zefoy Detection Issue?** Use smart auto-detect for 95%+ reliability!
   ```bash
-  ./run_xvfb.sh  # Best solution for VPS
+  ./venv.sh  # Smart unified runner - auto-detects & uses Xvfb on VPS
   ```
-- **Auto-detection:** Bot automatically enables headless mode if no display is
-  detected! 🎉
-- **Alternative:** Pure headless with stealth (60-80% success rate)
+- **Auto-detection:** Bot automatically enables Xvfb on VPS for best compatibility! 🎉
+- **Fallback:** Pure headless with stealth (60-80% success rate)
 - Minimum 2GB RAM required
 - /dev/shm should be >64MB (check with `df -h /dev/shm`)
 - **Troubleshooting:** [ZEFOY_HEADLESS_FIX.md](docs/ZEFOY_HEADLESS_FIX.md)

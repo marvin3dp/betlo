@@ -38,7 +38,7 @@ Anda.
 
 ```bash
 # 1. Auto-install via script
-./run_xvfb.sh  # Handles everything automatically
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)  # Handles everything automatically
 
 # 2. Manual setup (if needed)
 sudo apt install xvfb
@@ -127,7 +127,7 @@ browser:
 
 ```
 🎭 Headless mode enabled with stealth scripts
-💡 For best Zefoy compatibility, use Xvfb: ./run_xvfb.sh
+💡 For best Zefoy compatibility, use Xvfb: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 🎭 Applying stealth scripts (backup mode, 60-80% success)
 ✓ Stealth scripts applied
 ```
@@ -194,11 +194,11 @@ Bot automatically detects environment:
 # No display, auto-headless:
 ⚠ No display detected (VPS/Server environment)
 ⚠ Auto-enabling headless mode with stealth
-💡 For better Zefoy compatibility, use Xvfb: ./run_xvfb.sh
+💡 For better Zefoy compatibility, use Xvfb: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
 # Manual headless:
 🎭 Headless mode enabled with stealth scripts
-💡 For best Zefoy compatibility, use Xvfb: ./run_xvfb.sh
+💡 For best Zefoy compatibility, use Xvfb: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ---
@@ -208,7 +208,7 @@ Bot automatically detects environment:
 ```
 Are you on VPS/Server?
 ├─ YES → Can you install Xvfb (sudo)?
-│   ├─ YES → Use Xvfb + Visible ⭐ (./run_xvfb.sh)
+│   ├─ YES → Use Xvfb + Visible ⭐ (./venv.sh  # Smart auto-detect (uses Xvfb on VPS))
 │   └─ NO  → Use Pure Headless + Stealth (headless: true)
 │
 └─ NO (Local Machine)
@@ -230,7 +230,7 @@ browser:
 ```
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ### VPS/Server (no sudo):
@@ -278,7 +278,7 @@ ps aux | grep Xvfb
 
 # Kill and restart
 pkill Xvfb
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **⚠️ xkbcomp Warnings (SAFE TO IGNORE)**
@@ -310,14 +310,14 @@ grep "stealth" logs/betlo_*.log
 # ✓ Stealth scripts applied
 
 # If stealth fails → Use Xvfb!
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ### Elements Not Detected:
 
 ```bash
 # In headless mode → Switch to Xvfb
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
 # In Xvfb mode → Check DISPLAY
 echo $DISPLAY  # Should be :99
@@ -339,7 +339,7 @@ cat debug/page_source_*.html
 Always try Xvfb first on VPS:
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ### 2. Test Locally First
@@ -374,7 +374,7 @@ grep "display\|stealth\|Xvfb" logs/betlo_*.log
 
 ```bash
 screen -S bot
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 # Detach: Ctrl+A then D
 ```
 
@@ -393,7 +393,7 @@ screen -S bot
 
 ```bash
 # Xvfb (recommended)
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
 # Pure headless (backup)
 python run.py  # with headless: true
@@ -403,7 +403,7 @@ grep "display\|Xvfb" logs/betlo_*.log
 
 # Switch to Xvfb
 pkill -f chrome
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
 # Debug mode
 nano config.yaml  # logging.level: DEBUG
@@ -416,7 +416,7 @@ ls -lh debug/
 
 **TLDR:**
 
-1. **VPS → Use Xvfb** (`./run_xvfb.sh`) - 95%+ success ⭐
+1. **VPS → Use Xvfb** (`./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`) - 95%+ success ⭐
 2. **No sudo → Pure Headless** (`headless: true`) - 60-80% success
 3. **Local → Real Display** (`headless: false`) - 100% success
 

@@ -170,7 +170,7 @@ else
     echo "💡 Quick fixes:"
     echo "   1. Run smart installer: ./install.sh (auto-detects & installs everything)"
     echo "   2. Check VPS guide: docs/VPS_SETUP.md"
-    echo "   3. Run with Xvfb: ./run_xvfb.sh"
+    echo "   3. Run with smart auto-detect: ./venv.sh (uses Xvfb on VPS)"
     echo "   4. Or enable headless: Edit config.yaml, set headless: true"
 fi
 echo ""

@@ -181,7 +181,7 @@ for attempt in range(max_attempts):
 ```python
 if self.headless and not self._using_xvfb:
     logger.warning("🔧 Recommendations for headless mode:")
-    logger.warning("   1. BEST: Use Xvfb instead: ./run_xvfb.sh")
+    logger.warning("   1. BEST: Use Xvfb instead: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)")
     logger.warning("   2. Check debug/ folder for screenshot")
     logger.warning("   ⚠️ Pure headless has 60-80% success rate")
     logger.warning("   Xvfb provides 95%+ success rate!")
@@ -251,7 +251,7 @@ python run.py
 #### Test 3: Xvfb Mode (VPS/Server - RECOMMENDED)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Expected:**
@@ -331,7 +331,7 @@ Waiting for Zefoy page to load...
 ```
 ⚠ No display detected (VPS/Server environment)
 ⚠ Auto-enabling headless mode with stealth
-💡 For better Zefoy compatibility, use Xvfb: ./run_xvfb.sh
+💡 For better Zefoy compatibility, use Xvfb: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ⏳ Headless/Xvfb mode: Extended wait for full rendering...
 🔍 Detecting captcha (5 attempts, 10s timeout each)...
 ```
@@ -371,7 +371,7 @@ Waiting for Zefoy page to load...
 ```
 ⚠️ Captcha not detected after 5 attempts
 🔧 Recommendations for headless mode:
-   1. BEST: Use Xvfb instead: ./run_xvfb.sh
+   1. BEST: Use Xvfb instead: ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
    2. Check debug/ folder for screenshot
 📸 Saving diagnostic information...
 ```
@@ -478,7 +478,7 @@ python run.py
 ### 🌐 VPS/Server (Linux only)
 
 ```bash
-./run_xvfb.sh  # 95%+ success rate
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)  # 95%+ success rate
 ```
 
 **Alternative (if Xvfb not available):**
@@ -504,7 +504,7 @@ xvfb-run python run.py
 
 ```bash
 ./install.sh   # Smart installer (auto-detects VPS & installs everything)
-./run_xvfb.sh  # Run bot with Xvfb
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)  # Run bot with Xvfb
 ```
 
 ---
@@ -534,7 +534,7 @@ cat debug/diagnostic_no_captcha_found_*.txt
 
 **Solutions:**
 
-1. **BEST:** Use Xvfb → `./run_xvfb.sh`
+1. **BEST:** Use Xvfb → `./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`
 2. Check screenshot for Cloudflare/errors
 3. Increase wait times manually in code
 4. Try visible mode if on desktop
@@ -561,7 +561,7 @@ cat debug/diagnostic_no_captcha_found_*.txt
 **Solution:** Use Xvfb!
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ---
@@ -576,7 +576,7 @@ Before reporting issues, verify:
 - [ ] Config.yaml correct (especially `zefoy_url`)
 - [ ] Tried recommended mode for platform:
   - Desktop → Visible mode
-  - VPS → Xvfb mode (`./run_xvfb.sh`)
+  - VPS → Xvfb mode (`./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`)
 - [ ] Checked debug/ folder for diagnostics
 - [ ] Ran test script: `./test_zefoy.sh`
 - [ ] Read relevant docs:

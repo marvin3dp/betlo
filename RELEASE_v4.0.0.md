@@ -60,7 +60,7 @@ This is a comprehensive major update focused on making the bot work reliably on 
 - **Problem:** Keyboard warnings clutter output
 - **Solution:** Suppress stderr in Xvfb startup
 - **Result:** Clean logs
-- **File:** `run_xvfb.sh`
+- **File:** `venv.sh` (integrated Xvfb logic)
 
 ---
 
@@ -119,10 +119,12 @@ This is a comprehensive major update focused on making the bot work reliably on 
    - **Zero configuration** - just run `./venv.sh` and it handles everything
    - **Colored output** - clear visual feedback
 
-2. **`run_xvfb.sh`** ⭐
-   - Run bot with Xvfb virtual display
-   - 95%+ success rate on VPS
-   - Automatic setup and cleanup
+2. **`venv.sh` - Unified Smart Runner** ⭐⭐
+   - Auto-detects Desktop vs VPS environment
+   - Auto-starts Xvfb on VPS (95%+ success)
+   - Auto-installs Xvfb if missing
+   - Automatic cleanup on exit
+   - Replaces deprecated `run_xvfb.sh` (now integrated)
 
 3. **`install.sh` - Unified Smart Installer** ⭐
    - Auto-detects Desktop vs VPS environment
@@ -227,12 +229,12 @@ python run.py
 # Choose: Headless? No
 ```
 
-**VPS (Manual - 95%+ Success):**
+**VPS (Recommended - 95%+ Success):**
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect, uses Xvfb on VPS
 ```
 
-**VPS (Alternative - Headless):**
+**VPS (Alternative - Manual Headless):**
 ```bash
 python run.py
 # Choose: Headless? Yes
@@ -351,13 +353,13 @@ pip install --upgrade -r requirements.txt
 
 If you're on VPS and using pure headless mode:
 
-**Switch to Xvfb for 95%+ success rate:**
+**Use smart auto-detect for 95%+ success rate:**
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Auto-detects VPS & uses Xvfb automatically
 ```
 
-This one change will dramatically improve your success rate!
+This one command will dramatically improve your success rate!
 
 ---
 

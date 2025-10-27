@@ -83,10 +83,10 @@ class ZefoyBot:
         elif self._auto_headless:
             self.logger.warning("⚠ No display detected (VPS/Server environment)")
             self.logger.warning("⚠ Auto-enabling headless mode with stealth")
-            self.logger.info("💡 For better Zefoy compatibility, use Xvfb: ./run_xvfb.sh")
+            self.logger.info("💡 For better Zefoy compatibility, use: ./venv.sh (auto-starts Xvfb)")
         elif self.headless:
             self.logger.info("🎭 Headless mode enabled with stealth scripts")
-            self.logger.info("💡 For best Zefoy compatibility, use Xvfb: ./run_xvfb.sh")
+            self.logger.info("💡 For best Zefoy compatibility, use: ./venv.sh (auto-starts Xvfb)")
 
         # Initialize driver and captcha solver
         self.driver = None
@@ -310,7 +310,9 @@ class ZefoyBot:
                     # Provide mode-specific recommendations
                     if self.headless and not self._using_xvfb:
                         self.logger.warning("🔧 Recommendations for headless mode:")
-                        self.logger.warning("   1. BEST: Use Xvfb instead: ./run_xvfb.sh")
+                        self.logger.warning(
+                            "   1. BEST: Use ./venv.sh (auto-detects & starts Xvfb)"
+                        )
                         self.logger.warning("   2. Check debug/ folder for screenshot")
                         self.logger.warning("   3. Try visible mode if on desktop")
                         self.logger.warning("")
@@ -903,7 +905,7 @@ class ZefoyBot:
         Apply advanced stealth JavaScript to hide headless/automation indicators.
 
         Note: Provides 60-80% success rate with Zefoy.
-        For 95%+ success, use Xvfb: ./run_xvfb.sh
+        For 95%+ success, use: ./venv.sh (auto-starts Xvfb on VPS)
 
         This function is designed to NEVER throw exceptions to avoid
         disrupting browser setup. All errors are caught and logged only.
@@ -914,7 +916,7 @@ class ZefoyBot:
                 self.logger.debug("Skipping stealth scripts (visible mode with real display)")
                 return
             self.logger.info("🎭 Applying stealth scripts (backup mode, 60-80% success)")
-            self.logger.info("💡 For best results (95%+), use Xvfb: ./run_xvfb.sh")
+            self.logger.info("💡 For best results (95%+), use: ./venv.sh (auto-starts Xvfb)")
 
             # Comprehensive stealth script
             stealth_script = """
@@ -993,7 +995,7 @@ class ZefoyBot:
         except Exception as e:
             self.logger.error(f"❌ Failed to apply stealth: {e}")
             self.logger.warning("⚠️  Running without stealth protection!")
-            self.logger.warning("🔧 Recommended: Use Xvfb instead: ./run_xvfb.sh")
+            self.logger.warning("🔧 Recommended: Use ./venv.sh (auto-starts Xvfb on VPS)")
 
     def _setup_request_interception(self):
         """

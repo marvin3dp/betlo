@@ -78,9 +78,9 @@ This is a comprehensive update focused on improving VPS compatibility, headless 
 
 ##### 8. xkbcomp Warnings During Xvfb Startup
 - **Issue:** Harmless keyboard keymap warnings cluttering output
-- **Fixed:** Redirect stderr to /dev/null in `run_xvfb.sh`
+- **Fixed:** Redirect stderr to /dev/null in Xvfb startup (integrated in `venv.sh`)
 - **Result:** Clean startup logs
-- **File:** `run_xvfb.sh`
+- **File:** `venv.sh` (Xvfb logic integrated)
 
 #### ⚡ Improved
 
@@ -116,9 +116,8 @@ This is a comprehensive update focused on improving VPS compatibility, headless 
 - [VPS_CDP_FIX.md](VPS_CDP_FIX.md) - VPS-specific CDP issues
 
 ##### New Scripts
-- `run_xvfb.sh` - Run bot with Xvfb virtual display (95%+ success on VPS)
 - `check_vps.sh` - Comprehensive VPS environment checker
-- `venv.sh` - **Smart environment detection** - auto-routes to best mode ⭐
+- `venv.sh` - **Unified Smart Runner** - auto-detects & handles everything ⭐⭐
 
 ##### Enhanced Scripts
 - **`install.sh` - Unified Smart Installer** ⭐
@@ -128,6 +127,14 @@ This is a comprehensive update focused on improving VPS compatibility, headless 
   - ⚙️ Environment-specific setup instructions
   - 🎨 Colored output for better UX
   - Replaces deprecated `install_chrome_vps.sh` (now integrated)
+
+- **`venv.sh` - Unified Smart Runner** ⭐⭐
+  - 🔍 Auto-detects Desktop vs VPS/Server environment
+  - 🖥️ Auto-starts Xvfb on VPS (95%+ success)
+  - 📥 Auto-installs Xvfb if missing on VPS
+  - 🧹 Automatic cleanup on exit
+  - 🎨 Colored output with progress indicators
+  - Replaces deprecated `run_xvfb.sh` (now integrated)
 
 ##### New Features
 - **Unified Smart Installer** - `install.sh` now auto-detects environment and installs everything needed
@@ -199,13 +206,13 @@ pip install --upgrade -r requirements.txt
 
 ##### For VPS Users
 
-**Highly recommended:** Use Xvfb mode for best results (95%+ success rate)
+**Highly recommended:** Use unified smart runner for best results (95%+ success rate)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Auto-detects environment & uses Xvfb on VPS
 ```
 
-If you were using pure headless mode and experiencing issues, Xvfb will solve them.
+If you were using pure headless mode and experiencing issues, this will solve them.
 
 ##### Testing Your Setup
 
@@ -215,7 +222,7 @@ If you were using pure headless mode and experiencing issues, Xvfb will solve th
 
 # Test in your preferred mode
 python run.py  # Interactive
-./run_xvfb.sh  # VPS recommended
+./venv.sh      # Smart auto-detect (recommended)
 ```
 
 #### 📊 Statistics

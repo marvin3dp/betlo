@@ -39,7 +39,7 @@ nano config.yaml
 # Set: headless: false  # Important! Xvfb provides display
 
 # 3. Run with Xvfb script
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ### Manual Xvfb:
@@ -246,7 +246,7 @@ browser:
 ```
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Should work!**
@@ -335,7 +335,7 @@ browser:
 Then run with Xvfb:
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ---
@@ -344,7 +344,7 @@ Then run with Xvfb:
 
 Before reporting "headless not working":
 
-- [ ] Tried with Xvfb? (`./run_xvfb.sh`)
+- [ ] Tried with Xvfb? (`./venv.sh  # Smart auto-detect (uses Xvfb on VPS)`)
 - [ ] Set headless: false when using Xvfb?
 - [ ] Checked debug/ folder contents?
 - [ ] Enabled DEBUG logging?
@@ -363,7 +363,7 @@ Before reporting "headless not working":
 1. ✅ **PRIMARY:** Use Xvfb with visible mode
 
    ```bash
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
    ```
 
 2. ✅ **BACKUP:** Pure headless with stealth (60-80% success)
@@ -401,7 +401,7 @@ Before reporting "headless not working":
 sudo apt install xvfb
 
 # Run with Xvfb (RECOMMENDED)
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 
 # Enable debug mode
 nano config.yaml
@@ -420,7 +420,7 @@ python run.py 2>&1 | grep stealth
 # Kill everything and restart
 pkill -9 -f chrome
 pkill -9 -f Xvfb
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 ---

@@ -80,7 +80,7 @@ python run.py
 ### 🌐 VPS with Xvfb (Recommended)
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Result:**
@@ -188,7 +188,7 @@ If bot crashes with CDP error:
 
 3. **Use Xvfb (Most Reliable):**
    ```bash
-   ./run_xvfb.sh
+   ./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
    ```
 
 ### Issue: Zefoy Elements Not Detected
@@ -198,7 +198,7 @@ Even with CDP fix, elements might not be detected in pure headless mode.
 **Best solution:**
 
 ```bash
-./run_xvfb.sh
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)
 ```
 
 **Alternative:** Check `docs/ZEFOY_DETECTION_FIX.md` for diagnosis steps.
@@ -276,7 +276,7 @@ if self._stealth_script_fallback:
 **For best results on VPS:**
 
 ```bash
-./run_xvfb.sh  # Virtual display = no CDP issues + 95% Zefoy success
+./venv.sh  # Smart auto-detect (uses Xvfb on VPS)  # Virtual display = no CDP issues + 95% Zefoy success
 ```
 
 **The warning is informational - bot will work fine!** 🎉
