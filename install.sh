@@ -78,17 +78,20 @@ else
     echo "✓ Virtual environment created"
 fi
 
-# Activate virtual environment
-echo ""
-echo "🔄 Activating virtual environment..."
-source venv/bin/activate
-echo "✓ Virtual environment activated"
-
-# Install dependencies
+# Install dependencies using venv pip directly
 echo ""
 echo "📦 Installing dependencies..."
-pip install --upgrade pip
-pip install -r requirements.txt
+echo "Using virtual environment pip..."
+
+# Use venv pip directly to avoid externally-managed-environment issues
+venv/bin/pip install --upgrade pip
+
+if [ $? -ne 0 ]; then
+    echo "✗ Failed to upgrade pip"
+    exit 1
+fi
+
+venv/bin/pip install -r requirements.txt
 
 if [ $? -eq 0 ]; then
     echo "✓ Dependencies installed successfully"
