@@ -19,7 +19,7 @@ PyYAML==6.0.1
 python-dotenv==1.0.0
 
 # Utilities
-requests==2.31.0
+requests==2.32.4
 beautifulsoup4==4.12.2
 lxml==4.9.3
 setuptools>=68.0.0  # Required for Python 3.12+ (provides distutils)
