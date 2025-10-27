@@ -156,33 +156,50 @@ class ZefoyBot:
                 self.logger.info(f"Navigating to {self.config.zefoy_url}...")
                 self.driver.get(self.config.zefoy_url)
 
-                # Wait for page to load (longer in headless mode)
-                if self.headless:
-                    self.logger.debug("Headless mode: Waiting longer for page to fully render...")
-                    random_delay(5, 7)  # Longer wait for headless
+                # Wait for page to load with extended time for Zefoy
+                self.logger.info("Waiting for Zefoy page to fully load...")
+                if self.headless or self._using_xvfb:
+                    self.logger.debug("Headless/Xvfb mode: Extended wait for full rendering...")
+                    random_delay(8, 10)  # Even longer for Zefoy
                 else:
-                    random_delay(2, 3)
+                    random_delay(5, 6)
 
                 # Wait for page ready state
                 self._wait_for_page_ready()
 
+                # Additional wait for Zefoy's dynamic content
+                self.logger.debug("Waiting for Zefoy dynamic content to load...")
+                random_delay(3, 5)
+
                 status_messages.append("[green]✓ Page loaded[/green]")
                 live.update(create_status_panel())
 
-                # Debug: Save page source in headless mode
-                if self.headless and self.config.get("logging.level") == "DEBUG":
+                # Debug: Save page source for diagnosis
+                if self.config.get("logging.level") == "DEBUG":
+                    self.logger.debug("Saving page source for debugging...")
                     self._debug_save_page_source("initial_load")
 
                 # Handle any alerts that may appear
                 self._dismiss_alerts()
 
-                # Solve captcha
+                # Solve captcha with extended detection
                 status_messages.append("[cyan]🔐 Checking for captcha...[/cyan]")
                 live.update(create_status_panel())
 
                 self.captcha_solver = CaptchaSolver(self.driver, self.config, self.logger)
 
-                if self.captcha_solver.is_captcha_present():
+                # Try multiple times to detect captcha (Zefoy loads slowly)
+                captcha_found = False
+                for attempt in range(3):
+                    self.logger.debug(f"Captcha detection attempt {attempt + 1}/3...")
+                    if self.captcha_solver.is_captcha_present(timeout=10):
+                        captcha_found = True
+                        break
+                    if attempt < 2:
+                        self.logger.debug("Captcha not found yet, waiting...")
+                        random_delay(3, 5)
+
+                if captcha_found:
                     status_messages.append("[yellow]⚠ Captcha detected! Solving...[/yellow]")
                     live.update(create_status_panel())
 
@@ -203,7 +220,20 @@ class ZefoyBot:
                     live.update(create_status_panel())
                     self.stats["captchas_solved"] += 1
                 else:
-                    status_messages.append("[green]✓ No captcha detected[/green]")
+                    # Captcha not found after multiple attempts
+                    self.logger.warning("⚠️  Captcha not detected after 3 attempts")
+                    self.logger.info("💡 This may indicate:")
+                    self.logger.info("   1. Captcha already solved in previous session")
+                    self.logger.info("   2. Page loaded incorrectly")
+                    self.logger.info("   3. Zefoy changed their captcha system")
+
+                    # Save page source for diagnosis
+                    self.logger.info("📸 Saving page source for diagnosis...")
+                    self._debug_save_page_source("no_captcha_found")
+
+                    status_messages.append(
+                        "[yellow]⚠ No captcha detected - Check debug folder[/yellow]"
+                    )
                     live.update(create_status_panel())
 
                 # Initialize target tracker
@@ -267,7 +297,12 @@ class ZefoyBot:
             return False
 
     def _has_display(self):
-        """Check if display is available (not VPS/headless server)"""
+        """
+        Check if display is available (not VPS/headless server)
+
+        Note: This is called during __init__ BEFORE logger is initialized,
+        so it must NOT use self.logger
+        """
         import os
         import platform
 
@@ -275,10 +310,7 @@ class ZefoyBot:
         if platform.system() in ["Linux", "Darwin"]:
             display = os.environ.get("DISPLAY", "").strip()
             if display:
-                self.logger.debug(f"Display detected: {display}")
-                # Check if it's Xvfb
-                if "99" in display or "98" in display:
-                    self.logger.info("🖥️  Xvfb virtual display detected")
+                # Display found (don't log here - logger not initialized yet)
                 return True
 
             # Check if Xvfb or other virtual display is running
@@ -287,7 +319,6 @@ class ZefoyBot:
 
                 result = subprocess.run(["pgrep", "-x", "Xvfb"], capture_output=True, timeout=2)
                 if result.returncode == 0:
-                    self.logger.info("🖥️  Xvfb process detected")
                     return True  # Xvfb is running
             except Exception:
                 pass
@@ -644,16 +675,23 @@ class ZefoyBot:
 
             self.logger.debug("✓ Page ready state: complete")
 
-            # Additional wait for dynamic content (especially in headless)
-            if self.headless:
-                self.logger.debug("Waiting for dynamic content...")
-                random_delay(2, 3)
+            # Wait for body to be present
+            WebDriverWait(self.driver, timeout).until(
+                lambda driver: driver.execute_script("return document.body != null")
+            )
+
+            self.logger.debug("✓ Document body present")
+
+            # Additional wait for dynamic content
+            if self.headless or self._using_xvfb:
+                self.logger.debug("Waiting for dynamic content to render...")
+                random_delay(3, 5)
 
         except Exception as e:
             self.logger.warning(f"Could not verify page ready state: {e}")
 
     def _debug_save_page_source(self, label: str = "debug"):
-        """Save page source for debugging (headless mode diagnosis)"""
+        """Save page source for debugging (Zefoy diagnosis)"""
         try:
             import time
             from pathlib import Path
@@ -662,19 +700,64 @@ class ZefoyBot:
             debug_dir.mkdir(exist_ok=True)
 
             timestamp = time.strftime("%Y%m%d_%H%M%S")
+
+            # Save HTML source
             filename = f"page_source_{label}_{timestamp}.html"
             filepath = debug_dir / filename
-
             page_source = self.driver.page_source
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(page_source)
+            self.logger.info(f"📄 Page source saved: {filepath}")
 
-            self.logger.debug(f"Page source saved: {filepath}")
-
-            # Also save screenshot
+            # Save screenshot
             screenshot_path = debug_dir / f"screenshot_{label}_{timestamp}.png"
             self.driver.save_screenshot(str(screenshot_path))
-            self.logger.debug(f"Screenshot saved: {screenshot_path}")
+            self.logger.info(f"📸 Screenshot saved: {screenshot_path}")
+
+            # Save diagnostic info
+            diagnostic_path = debug_dir / f"diagnostic_{label}_{timestamp}.txt"
+            with open(diagnostic_path, "w", encoding="utf-8") as f:
+                f.write(f"=== Zefoy Bot Debug Report ===\n")
+                f.write(f"Timestamp: {timestamp}\n")
+                f.write(f"Label: {label}\n")
+                f.write(f"Headless: {self.headless}\n")
+                f.write(f"Using Xvfb: {self._using_xvfb}\n")
+                f.write(f"\n=== Page Info ===\n")
+                f.write(f"URL: {self.driver.current_url}\n")
+                f.write(f"Title: {self.driver.title}\n")
+
+                # Check for key elements
+                f.write(f"\n=== Element Detection ===\n")
+                try:
+                    # Check captcha
+                    captcha = self.driver.find_elements("id", "captchatoken")
+                    f.write(
+                        f"Captcha element (#captchatoken): {'FOUND' if captcha else 'NOT FOUND'}\n"
+                    )
+
+                    # Check common elements
+                    body = self.driver.find_elements("tag name", "body")
+                    f.write(f"Body tag: {'FOUND' if body else 'NOT FOUND'}\n")
+
+                    forms = self.driver.find_elements("tag name", "form")
+                    f.write(f"Forms count: {len(forms)}\n")
+
+                    buttons = self.driver.find_elements("tag name", "button")
+                    f.write(f"Buttons count: {len(buttons)}\n")
+
+                except Exception as e:
+                    f.write(f"Error checking elements: {e}\n")
+
+                # Page source analysis
+                f.write(f"\n=== Page Source Analysis ===\n")
+                f.write(f"Length: {len(page_source)} characters\n")
+                f.write(
+                    f"Contains 'captcha': {'YES' if 'captcha' in page_source.lower() else 'NO'}\n"
+                )
+                f.write(f"Contains 'zefoy': {'YES' if 'zefoy' in page_source.lower() else 'NO'}\n")
+
+            self.logger.info(f"📋 Diagnostic saved: {diagnostic_path}")
+            self.logger.info(f"💡 Check debug/ folder for analysis")
 
         except Exception as e:
             self.logger.warning(f"Could not save debug info: {e}")
