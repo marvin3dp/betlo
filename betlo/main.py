@@ -67,7 +67,7 @@ class ZefoyBotCLI:
         from rich.text import Text
 
         welcome_content = Text(justify="center")
-        welcome_content.append("TikTok Automation Tool\n\n", style="bold white")
+        welcome_content.append("TikTok Automation Tool\n\n\n", style="bold white")
         welcome_content.append("🚀 Automate TikTok engagement\n", style="green")
         welcome_content.append("✨ Multiple services support\n", style="green")
         welcome_content.append("🎯 Target goals & continuous mode\n", style="green")
@@ -98,7 +98,7 @@ class ZefoyBotCLI:
 
         # Educational disclaimer
         disclaimer_content = Text(justify="center")
-        disclaimer_content.append("⚠️  IMPORTANT DISCLAIMER ⚠️\n\n", style="bold yellow")
+        disclaimer_content.append("⚠️  IMPORTANT DISCLAIMER ⚠️\n\n\n", style="bold yellow")
         disclaimer_content.append("Educational & Testing Purpose Only\n\n", style="bold white")
 
         disclaimer_content.append("By using this tool, you agree that:\n\n", style="cyan")
@@ -967,42 +967,160 @@ class ZefoyBotCLI:
 
     def _configure_manual_input(self):
         """Configure manual captcha input settings"""
+        from rich import box
+        from rich.align import Align
+        from rich.panel import Panel
+        from rich.text import Text
+
         print_header("MANUAL CAPTCHA INPUT SETTINGS")
 
         current_manual_input = self.config.get("captcha.manual_input", True)
         current_auto_solve = self.config.get("captcha.auto_solve", False)
         current_save_image = self.config.get("captcha.save_image", True)
-        current_auto_open = self.config.get("captcha.auto_open_image", True)
+        current_auto_open = self.config.get("captcha.auto_open_image", False)
+        current_upload_cloud = self.config.get("captcha.upload_to_cloud", True)
+        current_cloud_url = self.config.get("captcha.cloud_uploader_url", "https://uploader.sh")
 
-        BotUI.print_info_panel(
-            "⌨️  MANUAL CAPTCHA INPUT - Human Verification\n\n"
-            "Two modes available:\n\n"
-            "1. Hybrid Mode (Recommended):\n"
-            "   • Auto-solve: ON | Manual Input: ON\n"
-            "   • OCR attempts first, fallback to manual if fails\n\n"
-            "2. Manual Only Mode:\n"
-            "   • Auto-solve: OFF | Manual Input: ON\n"
-            "   • Always use manual input (no OCR)\n"
-            "   • Faster if OCR rarely works for you\n\n"
-            f"Current Status: {'✅ ENABLED' if current_manual_input else '❌ DISABLED'}",
-            title="⌨️  About Manual Input",
+        # Show current configuration
+        config_text = Text()
+        config_text.append("Current Configuration:\n\n", style="bold cyan")
+        config_text.append(f"Manual Input: ", style="white")
+        config_text.append(
+            f"{'✅ ENABLED' if current_manual_input else '❌ DISABLED'}\n",
+            style="green" if current_manual_input else "red",
+        )
+        config_text.append(f"Auto-solve OCR: ", style="white")
+        config_text.append(
+            f"{'✅ ON' if current_auto_solve else '❌ OFF'}\n",
+            style="green" if current_auto_solve else "red",
+        )
+        config_text.append(f"Save Images: ", style="white")
+        config_text.append(
+            f"{'✅ YES' if current_save_image else '❌ NO'}\n",
+            style="green" if current_save_image else "red",
         )
 
+        if current_upload_cloud:
+            config_text.append(f"Display Mode: ", style="white")
+            config_text.append("☁️  Cloud/VPS Mode\n", style="cyan bold")
+        elif current_auto_open:
+            config_text.append(f"Display Mode: ", style="white")
+            config_text.append("🖥️  Desktop Mode\n", style="green bold")
+        else:
+            config_text.append(f"Display Mode: ", style="white")
+            config_text.append("📁 Manual Mode\n", style="yellow bold")
+
+        console.print()
+        console.print(
+            Panel(
+                Align.center(config_text),
+                title="[bold yellow]📋 Current Settings[/bold yellow]",
+                title_align="center",
+                box=box.ROUNDED,
+                style="yellow",
+                border_style="yellow",
+                padding=(1, 2),
+            )
+        )
         console.print()
 
+        # Main settings
         manual_input = questionary.confirm(
             "Enable manual captcha input?", default=current_manual_input, style=custom_style
         ).ask()
 
-        # If manual input enabled, ask for mode
+        save_image = questionary.confirm(
+            "Save captcha images to screenshots folder?",
+            default=current_save_image,
+            style=custom_style,
+        ).ask()
+
+        # Display mode selection
+        console.print()
+        mode_info = Text()
+        mode_info.append("Choose Captcha Display Mode:\n\n", style="bold cyan")
+        mode_info.append("☁️  Cloud/VPS Mode\n", style="bold cyan")
+        mode_info.append("   • Upload captcha to cloud service\n", style="dim white")
+        mode_info.append("   • Access via URL from any device\n", style="dim white")
+        mode_info.append("   • Perfect for VPS/remote servers\n\n", style="dim white")
+        mode_info.append("🖥️  Desktop Mode\n", style="bold green")
+        mode_info.append("   • Auto-open with image viewer\n", style="dim white")
+        mode_info.append("   • For local desktop usage\n", style="dim white")
+        mode_info.append("   • Not suitable for VPS\n\n", style="dim white")
+        mode_info.append("📁 Manual Mode\n", style="bold yellow")
+        mode_info.append("   • Save to screenshots folder\n", style="dim white")
+        mode_info.append("   • Check folder manually", style="dim white")
+
+        console.print(
+            Panel(
+                Align.center(mode_info),
+                title="[bold cyan]🎯 Display Mode Options[/bold cyan]",
+                title_align="center",
+                box=box.ROUNDED,
+                style="cyan",
+                border_style="cyan",
+                padding=(1, 2),
+            )
+        )
+        console.print()
+
+        display_mode = questionary.select(
+            "Select captcha display mode:",
+            choices=[
+                "☁️  Cloud/VPS Mode (Recommended for servers)",
+                "🖥️  Desktop Mode (Auto-open image viewer)",
+                "📁 Manual Mode (Check screenshots folder)",
+            ],
+            default=(
+                "☁️  Cloud/VPS Mode (Recommended for servers)"
+                if current_upload_cloud
+                else "🖥️  Desktop Mode (Auto-open image viewer)"
+                if current_auto_open
+                else "📁 Manual Mode (Check screenshots folder)"
+            ),
+            style=custom_style,
+        ).ask()
+
+        # Set upload_to_cloud and auto_open_image based on mode
+        upload_to_cloud = False
+        auto_open_image = False
+
+        if "Cloud/VPS" in display_mode:
+            upload_to_cloud = True
+            auto_open_image = False
+
+            # Ask for cloud uploader URL
+            console.print()
+            change_url = questionary.confirm(
+                f"Cloud uploader URL: {current_cloud_url}\nChange URL?",
+                default=False,
+                style=custom_style,
+            ).ask()
+
+            if change_url:
+                cloud_url = questionary.text(
+                    "Enter cloud uploader URL:",
+                    default=current_cloud_url,
+                    style=custom_style,
+                ).ask()
+                self.config.set("captcha.cloud_uploader_url", cloud_url)
+
+        elif "Desktop" in display_mode:
+            upload_to_cloud = False
+            auto_open_image = True
+        else:
+            upload_to_cloud = False
+            auto_open_image = False
+
+        # OCR mode selection
+        console.print()
         manual_only_mode = False
         if manual_input:
-            console.print()
             BotUI.print_info_panel(
                 "Choose your preferred mode:\n\n"
                 "• Hybrid Mode: OCR first, manual as fallback (recommended)\n"
                 "• Manual Only: Always manual, no OCR (faster if OCR doesn't work)",
-                title="💡 Mode Selection",
+                title="💡 OCR Mode Selection",
             )
             console.print()
 
@@ -1012,24 +1130,11 @@ class ZefoyBotCLI:
                 style=custom_style,
             ).ask()
 
-        save_image = questionary.confirm(
-            "Save captcha images to screenshots folder?",
-            default=current_save_image,
-            style=custom_style,
-        ).ask()
-
-        auto_open_image = False
-        if save_image:
-            auto_open_image = questionary.confirm(
-                "Auto-open captcha image with default viewer? (Helpful for headless mode)",
-                default=current_auto_open,
-                style=custom_style,
-            ).ask()
-
         # Update config
         self.config.set("captcha.manual_input", manual_input)
         self.config.set("captcha.save_image", save_image)
         self.config.set("captcha.auto_open_image", auto_open_image)
+        self.config.set("captcha.upload_to_cloud", upload_to_cloud)
 
         # Update auto_solve based on mode
         if manual_input and manual_only_mode:
@@ -1049,46 +1154,47 @@ class ZefoyBotCLI:
 
         # Show summary
         console.print()
-        if manual_input:
-            if manual_only_mode:
-                print_success("Manual Only Mode ENABLED!")
-                BotUI.print_info_panel(
-                    "✓ Manual captcha input: ENABLED\n"
-                    "✓ Auto-solve OCR: DISABLED\n\n"
-                    "You will always enter captcha manually (no OCR attempts).",
-                    title="✓ Configuration",
-                )
-            else:
-                print_success("Hybrid Mode ENABLED!")
-                BotUI.print_info_panel(
-                    "✓ Manual captcha input: ENABLED\n"
-                    "✓ Auto-solve OCR: ENABLED\n\n"
-                    "OCR will attempt first, manual input as fallback.",
-                    title="✓ Configuration",
-                )
+        summary_text = Text()
+        summary_text.append("Configuration Saved!\n\n", style="bold green")
+        summary_text.append(f"Manual Input: ", style="white")
+        summary_text.append(
+            f"{'✅ ENABLED' if manual_input else '❌ DISABLED'}\n",
+            style="green" if manual_input else "red",
+        )
+        summary_text.append(f"Auto-solve OCR: ", style="white")
+        summary_text.append(
+            f"{'✅ ON' if (not manual_only_mode and manual_input) else '❌ OFF'}\n",
+            style="green" if (not manual_only_mode and manual_input) else "red",
+        )
+        summary_text.append(f"Save Images: ", style="white")
+        summary_text.append(
+            f"{'✅ YES' if save_image else '❌ NO'}\n\n", style="green" if save_image else "red"
+        )
 
-            if save_image and auto_open_image:
-                console.print()
-                BotUI.print_info_panel(
-                    "✓ Captcha images will be saved and auto-opened\n"
-                    "✓ Perfect for headless mode or remote sessions",
-                    title="✓ Image Settings",
-                )
-            elif save_image:
-                console.print()
-                BotUI.print_info_panel(
-                    "✓ Captcha images will be saved to screenshots/\n"
-                    "✓ You'll need to view them manually",
-                    title="✓ Image Settings",
-                )
+        if upload_to_cloud:
+            summary_text.append("Display Mode: ", style="white")
+            summary_text.append("☁️  Cloud/VPS Mode\n", style="cyan bold")
+            summary_text.append("Captcha will be uploaded to cloud", style="dim white")
+        elif auto_open_image:
+            summary_text.append("Display Mode: ", style="white")
+            summary_text.append("🖥️  Desktop Mode\n", style="green bold")
+            summary_text.append("Captcha will auto-open in viewer", style="dim white")
         else:
-            print_success("Manual captcha input DISABLED!")
-            BotUI.print_warning_panel(
-                "⚠️ Warning: Manual input is disabled!\n\n"
-                "If auto-solve fails, the bot will return to main menu.\n"
-                "Make sure auto-solve is enabled and working properly.",
-                title="⚠️ Important",
+            summary_text.append("Display Mode: ", style="white")
+            summary_text.append("📁 Manual Mode\n", style="yellow bold")
+            summary_text.append("Check screenshots folder manually", style="dim white")
+
+        console.print(
+            Panel(
+                Align.center(summary_text),
+                title="[bold green]✓ Configuration Summary[/bold green]",
+                title_align="center",
+                box=box.ROUNDED,
+                style="green",
+                border_style="green",
+                padding=(1, 2),
             )
+        )
 
     def _configure_fast_mode(self):
         """Configure FAST mode settings"""

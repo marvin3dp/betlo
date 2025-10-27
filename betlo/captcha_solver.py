@@ -50,18 +50,48 @@ class CaptchaSolver:
         self.manual_input = config.get("captcha.manual_input", True)
         self.save_image = config.get("captcha.save_image", True)
         self.debug_mode = config.get("captcha.debug_mode", False)
-        self.auto_open_image = config.get(
-            "captcha.auto_open_image", True
-        )  # Auto open image for manual input
+
+        # Get raw config values
+        config_auto_open = config.get("captcha.auto_open_image", False)
+        config_upload_cloud = config.get("captcha.upload_to_cloud", True)
+
         self.fast_mode = config.get(
             "captcha.fast_mode", True
         )  # Fast mode for quicker OCR (less combinations)
-        self.upload_to_cloud = config.get(
-            "captcha.upload_to_cloud", False
-        )  # Upload captcha to cloud for VPS access
         self.cloud_uploader_url = config.get(
             "captcha.cloud_uploader_url", "https://uploader.sh"
         )  # Cloud uploader URL
+
+        # Validate and set captcha display mode
+        # IMPORTANT: Cloud mode and auto_open mode are mutually exclusive
+        # Cloud mode = Upload to cloud, show URL (for VPS/remote servers)
+        # Desktop mode = Auto-open with image viewer (for local desktop)
+
+        if config_upload_cloud and config_auto_open:
+            # Both enabled - prioritize cloud mode (VPS use case)
+            self.upload_to_cloud = True
+            self.auto_open_image = False
+            self.logger.warning(
+                "⚠️  Both upload_to_cloud and auto_open_image are enabled in config!"
+            )
+            self.logger.info(
+                "✓ Cloud mode prioritized - captcha will be uploaded (auto_open disabled)"
+            )
+        elif config_upload_cloud:
+            # Cloud mode only
+            self.upload_to_cloud = True
+            self.auto_open_image = False
+            self.logger.info("☁️  Captcha Mode: Cloud/VPS - Upload to cloud enabled")
+        elif config_auto_open:
+            # Desktop mode only
+            self.upload_to_cloud = False
+            self.auto_open_image = True
+            self.logger.info("🖥️  Captcha Mode: Desktop - Auto-open image viewer enabled")
+        else:
+            # Neither enabled - manual mode
+            self.upload_to_cloud = False
+            self.auto_open_image = False
+            self.logger.info("📁 Captcha Mode: Manual - Check screenshots folder manually")
 
         # Advanced OCR settings untuk captcha tidak rata / naik turun
         self.horizontal_reading = config.get("captcha.ocr_advanced.horizontal_reading", True)
@@ -143,7 +173,6 @@ class CaptchaSolver:
                     status_messages.append(f"[yellow]⚠ Auto-solve is disabled[/yellow]")
                     status_messages.append(f"[yellow]⌨  Using manual captcha input...[/yellow]")
                     live.update(create_status_panel())
-                    self.logger.info("Auto-solve disabled, using manual input directly")
                     # Will jump to manual input section after the auto loop
                 elif self.auto_solve:
                     # Show mode-specific info
@@ -171,7 +200,6 @@ class CaptchaSolver:
                         f"\n[bold cyan]Attempt {attempt}/{max_attempts}[/bold cyan]"
                     )
                     live.update(create_status_panel())
-                    self.logger.info(f"Captcha attempt {attempt}/{max_attempts}")
 
                     try:
                         # Wait for captcha image to load
@@ -195,9 +223,6 @@ class CaptchaSolver:
                             )
                             live.update(create_status_panel())
 
-                            self.logger.info(
-                                f"Attempting OCR ({mode_text} mode) - Attempt {attempt}/{max_attempts}..."
-                            )
                             captcha_text = self._solve_with_ocr(captcha_img)
                             ocr_attempts_made = attempt
 
@@ -227,10 +252,6 @@ class CaptchaSolver:
                                 )
                                 live.update(create_status_panel())
 
-                                self.logger.info(
-                                    f"OCR failed. Retrying... ({attempt}/{max_attempts})"
-                                )
-                                self.logger.info("Refreshing captcha for next OCR attempt...")
                                 self._refresh_captcha()
                                 random_delay(2, 3)
                                 continue
@@ -1117,8 +1138,6 @@ class CaptchaSolver:
             image_name = image_path.name
             upload_url = f"{self.cloud_uploader_url}/{image_name}"
 
-            self.logger.info(f"Uploading captcha to {self.cloud_uploader_url}...")
-
             # Read image file
             with open(image_path, "rb") as f:
                 image_data = f.read()
@@ -1134,7 +1153,6 @@ class CaptchaSolver:
             if response.status_code == 200:
                 # uploader.sh returns the URL in the response
                 uploaded_url = response.text.strip()
-                self.logger.success(f"✓ Captcha uploaded successfully!")
                 return uploaded_url
             else:
                 self.logger.warning(f"Upload failed with status code: {response.status_code}")
@@ -1437,21 +1455,28 @@ class CaptchaSolver:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 img_path = self.config.screenshot_path / f"captcha_manual_{timestamp}.png"
                 captcha_img.screenshot(str(img_path))
-                self.logger.info(f"Captcha image saved: {img_path}")
 
-                # Upload to cloud if enabled (very useful for VPS!)
+                # Apply captcha display mode (mutually exclusive)
+                # Priority: Cloud > Desktop > Manual
+
                 if self.upload_to_cloud:
+                    # Cloud mode: Upload captcha to cloud (for VPS/remote servers)
                     uploaded_url = self._upload_image_to_cloud(img_path)
                     if uploaded_url:
-                        self.logger.info(f"Captcha URL: {uploaded_url}")
+                        self.logger.info("☁️  Captcha uploaded to cloud")
+                    else:
+                        self.logger.warning("Failed to upload - check screenshots folder")
 
-                # Auto-open image with default application (useful for local desktop)
-                if self.auto_open_image and not self.upload_to_cloud:
+                elif self.auto_open_image:
+                    # Desktop mode: Auto-open image with default viewer (for local use)
                     opened = self._open_image_with_default_app(img_path)
-                    if not opened:
-                        self.logger.warning(
-                            "Could not auto-open captcha image. Check screenshots folder manually."
-                        )
+                    if opened:
+                        self.logger.info("🖥️  Captcha opened in image viewer")
+                    else:
+                        self.logger.warning("Could not auto-open - check screenshots folder")
+                else:
+                    # Manual mode: User needs to check screenshots folder manually
+                    self.logger.info(f"📁 Captcha saved: {img_path.name}")
 
             # Get captcha input from user with beautiful centered panel
             from rich import box
@@ -1459,56 +1484,60 @@ class CaptchaSolver:
             from rich.panel import Panel
             from rich.text import Text
 
-            captcha_content = Text()
-            captcha_content.append("🔐 Manual Captcha Required 🔐\n\n", style="bold yellow")
-
-            if uploaded_url:
-                # Show cloud URL (perfect for VPS)
-                captcha_content.append("☁️  Captcha uploaded to cloud!\n", style="bold green")
-                captcha_content.append("📎 URL: ", style="bold cyan")
-                captcha_content.append(f"{uploaded_url}\n\n", style="bold white")
-                captcha_content.append(
-                    "💡 Open this URL in your browser to view the captcha\n", style="dim white"
-                )
-            elif img_path and self.auto_open_image:
-                # Local file opened
-                captcha_content.append("📸 Captcha image opened automatically\n", style="bold green")
-                captcha_content.append(f"Location: {img_path.name}\n\n", style="dim white")
-            else:
-                # Fallback message
-                captcha_content.append("Please look at the captcha image\n", style="bold white")
-                captcha_content.append("in your browser window\n\n", style="bold white")
-
-            captcha_content.append("📝 Enter the text you see\n", style="cyan")
-            captcha_content.append("(lowercase letters only)", style="dim cyan")
-
-            console.print()
-            console.print(
-                Panel(
-                    Align.center(captcha_content),
-                    title="[bold yellow]🔐 Manual Captcha Input Required[/bold yellow]",
-                    title_align="center",
-                    box=box.DOUBLE,
-                    style="yellow",
-                    border_style="yellow",
-                    padding=(1, 4),
-                )
-            )
             console.print()
 
-            # If cloud URL available, display it again in a separate highlighted panel
+            # Show captcha URL in separate rounded panel if uploaded
             if uploaded_url:
-                from rich.panel import Panel
-                from rich.text import Text
+                url_content = Text()
 
-                url_panel = Text()
-                url_panel.append("🌐 Captcha URL:\n", style="bold cyan")
-                url_panel.append(uploaded_url, style="bold white")
+                # Parse the uploaded_url response to extract clean URL
+                # uploader.sh returns format like:
+                # =========================
+                # Uploaded 1 file, X bytes
+                # wget https://...
+                # =========================
+                clean_url = uploaded_url
+                if "wget " in uploaded_url:
+                    # Extract URL from wget command
+                    for line in uploaded_url.split("\n"):
+                        if line.strip().startswith("wget "):
+                            clean_url = line.strip().replace("wget ", "").strip()
+                            break
+                elif "http" in uploaded_url:
+                    # Extract any http URL
+                    for line in uploaded_url.split("\n"):
+                        if "http" in line:
+                            clean_url = line.strip()
+                            # Remove any leading/trailing separators
+                            clean_url = clean_url.strip("=").strip()
+                            if clean_url.startswith("wget "):
+                                clean_url = clean_url.replace("wget ", "")
+                            break
+
+                # Extract file size info if available
+                file_info = ""
+                if "Uploaded" in uploaded_url and "bytes" in uploaded_url:
+                    for line in uploaded_url.split("\n"):
+                        if "Uploaded" in line and "bytes" in line:
+                            file_info = line.strip()
+                            break
+
+                # Display file info if available
+                if file_info:
+                    url_content.append(f"{file_info}\n\n", style="dim white")
+
+                # Display CLI format
+                url_content.append("CLI:\n", style="bold cyan")
+                url_content.append(f"wget {clean_url}\n\n", style="white")
+
+                # Display browser format
+                url_content.append("Browser:\n", style="bold cyan")
+                url_content.append(clean_url, style="bold white")
 
                 console.print(
                     Panel(
-                        Align.center(url_panel),
-                        title="[bold cyan]☁️  Cloud Link[/bold cyan]",
+                        Align.center(url_content),
+                        title="[bold cyan]🔗 Captcha URL[/bold cyan]",
                         title_align="center",
                         box=box.ROUNDED,
                         style="cyan",
@@ -1518,7 +1547,41 @@ class CaptchaSolver:
                 )
                 console.print()
 
-            text = BotUI.ask_input("[yellow]Enter captcha text[/yellow]")
+            # Show instruction panel
+            captcha_content = Text()
+
+            if uploaded_url:
+                # Cloud mode message
+                captcha_content.append("☁️  VPS/Cloud Mode\n", style="bold cyan")
+                captcha_content.append("Open URL above to view captcha\n\n", style="dim white")
+            elif img_path and self.auto_open_image:
+                # Desktop mode with auto-open
+                captcha_content.append("🖥️  Desktop Mode\n", style="bold green")
+                captcha_content.append("Captcha opened in image viewer\n\n", style="dim white")
+            elif img_path:
+                # Manual mode
+                captcha_content.append("📁 Manual Mode\n", style="bold yellow")
+                captcha_content.append(f"Check: {img_path.name}\n\n", style="dim white")
+            else:
+                # Fallback
+                captcha_content.append("Look at captcha in browser\n\n", style="bold white")
+
+            captcha_content.append("Enter captcha text (lowercase only)", style="cyan")
+
+            console.print(
+                Panel(
+                    Align.center(captcha_content),
+                    title="[bold yellow]🔐 Manual Captcha Input[/bold yellow]",
+                    title_align="center",
+                    box=box.ROUNDED,
+                    style="yellow",
+                    border_style="yellow",
+                    padding=(1, 2),
+                )
+            )
+            console.print()
+
+            text = BotUI.ask_input("[yellow]Captcha text[/yellow]")
 
             # Clean input
             text = re.sub(r"[^a-z]", "", text.lower().strip())
