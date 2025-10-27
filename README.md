@@ -13,6 +13,7 @@
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com)
 [![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com)
 [![OCR](https://img.shields.io/badge/OCR-Tesseract-orange.svg)](https://github.com/tesseract-ocr/tesseract)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/marvin3dp/betlo?utm_source=oss&utm_medium=github&utm_campaign=marvin3dp%2Fbetlo&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) •
 [Configuration](#-configuration) • [Documentation](#-documentation) •
