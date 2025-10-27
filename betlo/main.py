@@ -236,8 +236,22 @@ class ZefoyBotCLI:
         # Get headless mode from config (already configured in Settings)
         headless = self.config.browser_headless
 
+        # Check if display is available (VPS detection)
+        import os
+        import platform
+
+        has_display = True
+        if platform.system() in ["Linux", "Darwin"]:
+            display = os.environ.get("DISPLAY", "").strip()
+            if not display:
+                has_display = False
+
         # Show info about current settings
-        browser_info = f"Browser Mode: {'Headless (Hidden)' if headless else 'Visible'}"
+        if not headless and not has_display:
+            browser_info = "Browser Mode: Headless (Auto - No Display Detected)"
+        else:
+            browser_info = f"Browser Mode: {'Headless (Hidden)' if headless else 'Visible'}"
+
         if self.config.use_adblock:
             browser_info += "\nAdBlock: Enabled"
         if self.config.get("browser.disable_images", False):

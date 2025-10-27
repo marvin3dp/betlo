@@ -100,6 +100,8 @@
 - 🔄 **Intelligent Cooldown System** - 6 fallback points prevent rate limiting
 - 🎯 **Target Goals & Progress Tracking** - Set targets and track automatically
 - 🌐 **Headless Mode Support** - Run in background with auto-open captcha
+- 🎭 **Stealth Mode** - Advanced techniques to hide headless/automation
+- 🖥️ **VPS Auto-Detection** - Auto-enable headless on servers (no display)
 - 🚫 **Advanced AdBlock** - DNS-based + Request interception
 - 🤖 **Human-like Behavior** - Random delays, typing simulation
 - 💾 **Session Persistence** - Continue where you left off
@@ -292,7 +294,9 @@ If you get **"Binary Location Must be a String"** error, install Chrome:
 
 **Important for VPS:**
 
-- Set `headless: true` in `config.yaml`
+- **Auto-detection:** Bot automatically enables headless mode if no display is
+  detected! 🎉
+- Recommended: Explicitly set `headless: true` in `config.yaml`
 - Minimum 2GB RAM required
 - /dev/shm should be >64MB (check with `df -h /dev/shm`)
 - See [VPS_SETUP.md](docs/VPS_SETUP.md) for complete guide
@@ -752,6 +756,7 @@ Result "ab12" appears 2 times → Invalid (numbers) ❌
 | [OCR_TROUBLESHOOTING.md](docs/OCR_TROUBLESHOOTING.md)             | OCR debugging and optimization |
 | [AGGRESSIVE_OCR_MODE.md](docs/AGGRESSIVE_OCR_MODE.md)             | AGGRESSIVE mode detailed guide |
 | [HEADLESS_MODE_GUIDE.md](docs/HEADLESS_MODE_GUIDE.md)             | Running in headless mode       |
+| [HEADLESS_STEALTH.md](docs/HEADLESS_STEALTH.md)                   | **Stealth mode for headless**  |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature      |
 | [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained      |
 

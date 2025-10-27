@@ -110,8 +110,9 @@ if [ -f "config.yaml" ]; then
     if [ "$HEADLESS" == "true" ]; then
         echo "   ✓ Headless mode: enabled (good for VPS)"
     else
-        echo "   ⚠ Headless mode: disabled"
-        echo "     For VPS, set headless: true in config.yaml"
+        echo "   ⚠ Headless mode: disabled in config"
+        echo "     Note: Bot will auto-enable headless if no display detected"
+        echo "     Recommended: Set headless: true in config.yaml"
     fi
 else
     echo "   ✗ config.yaml not found"

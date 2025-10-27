@@ -51,13 +51,27 @@ class ZefoyBot:
             headless: Run browser in headless mode
         """
         self.config = config or Config()
+
+        # Auto-detect VPS/server environment (no display)
         self.headless = headless or self.config.browser_headless
+        if not self.headless and not self._has_display():
+            self.headless = True
+            # Will log after logger is initialized
+            self._auto_headless = True
+        else:
+            self._auto_headless = False
 
         # Setup logger
         log_file = self.config.logs_path / f"betlo_{datetime.now().strftime('%Y%m%d')}.log"
         self.logger = get_logger(
             name="ZefoyBot", log_file=str(log_file), level=self.config.get("logging.level", "INFO")
         )
+
+        # Log auto-headless detection
+        if self._auto_headless:
+            self.logger.warning("⚠ No display detected (VPS/Server environment)")
+            self.logger.warning("⚠ Auto-enabling headless mode for stability")
+            self.logger.info("💡 To suppress this, set 'headless: true' in config.yaml")
 
         # Initialize driver and captcha solver
         self.driver = None
@@ -224,6 +238,32 @@ class ZefoyBot:
             self._take_error_screenshot("startup_error")
             return False
 
+    def _has_display(self):
+        """Check if display is available (not VPS/headless server)"""
+        import os
+        import platform
+
+        # Check $DISPLAY environment variable (Linux/Unix)
+        if platform.system() in ["Linux", "Darwin"]:
+            display = os.environ.get("DISPLAY", "").strip()
+            if display:
+                return True
+
+            # Check if Xvfb or other virtual display is running
+            try:
+                import subprocess
+
+                result = subprocess.run(["pgrep", "-x", "Xvfb"], capture_output=True, timeout=2)
+                if result.returncode == 0:
+                    return True  # Xvfb is running
+            except Exception:
+                pass
+
+            return False  # No display found
+
+        # Windows always has display
+        return True
+
     def _kill_zombie_chrome_processes(self):
         """Kill any zombie Chrome/ChromeDriver processes"""
         try:
@@ -332,8 +372,11 @@ class ZefoyBot:
                 # Basic options
                 if self.headless:
                     options.add_argument("--headless=new")
+                    # Stealth mode for headless - mimic real browser
+                    self.logger.debug("Enabling headless stealth mode")
 
                 options.add_argument(f"--window-size={self.config.browser_window_size}")
+                options.add_argument("--start-maximized")  # Important for proper rendering
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 options.add_argument("--disable-blink-features=AutomationControlled")
@@ -343,23 +386,18 @@ class ZefoyBot:
                 # VPS/Server stability improvements
                 options.add_argument("--disable-setuid-sandbox")
                 options.add_argument("--disable-accelerated-2d-canvas")
-                options.add_argument("--disable-extensions")
                 options.add_argument("--disable-default-apps")
                 options.add_argument("--disable-infobars")
-                options.add_argument("--disable-logging")
                 options.add_argument("--disable-login-animations")
                 options.add_argument("--disable-notifications")
-                options.add_argument("--disable-popup-blocking")
                 options.add_argument("--disable-translate")
-                options.add_argument("--disable-web-security")
                 options.add_argument("--no-first-run")
                 options.add_argument("--no-default-browser-check")
                 options.add_argument("--ignore-certificate-errors")
-                options.add_argument("--disable-application-cache")
-                options.add_argument("--disk-cache-size=0")
 
-                # Disable debugging port to avoid connection issues
-                options.add_argument("--remote-debugging-port=0")
+                # Better stealth - don't disable too many things
+                # Removed: --disable-web-security, --disable-extensions, --remote-debugging-port=0
+                # These are red flags for bot detection
 
                 # Use single process if on very limited VPS (can be toggled)
                 if self.config.get("browser.single_process", False):
@@ -369,6 +407,15 @@ class ZefoyBot:
                 # Crash handling
                 options.add_argument("--disable-crash-reporter")
                 options.add_argument("--disable-breakpad")
+
+                # Additional stealth arguments for headless
+                if self.headless:
+                    # Make headless mode look more like regular Chrome
+                    options.add_argument("--disable-blink-features=AutomationControlled")
+                    options.add_argument("--excludeSwitches=['enable-automation']")
+                    options.add_argument("--disable-dev-shm-usage")
+                    # Set realistic user data directory
+                    options.add_argument("--disable-features=IsolateOrigins,site-per-process")
 
                 # Aggressive ad-blocking arguments
                 if self.config.use_adblock:
@@ -444,6 +491,10 @@ class ZefoyBot:
 
                 # Set timeouts
                 self.driver.set_page_load_timeout(self.config.get("timeouts.page_load", 30))
+
+                # Apply stealth scripts for headless mode
+                if self.headless:
+                    self._apply_stealth_scripts()
 
                 self.logger.success("Browser initialized successfully")
 
@@ -545,6 +596,99 @@ class ZefoyBot:
                     raise
                 else:
                     time.sleep(retry_delay)
+
+    def _apply_stealth_scripts(self):
+        """Apply stealth JavaScript to hide headless mode indicators"""
+        try:
+            self.logger.debug("Applying stealth scripts for headless mode...")
+
+            # Script 1: Hide webdriver property
+            script_webdriver = """
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            """
+
+            # Script 2: Mock plugins and mimeTypes
+            script_plugins = """
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3, 4, 5]
+            });
+            Object.defineProperty(navigator, 'mimeTypes', {
+                get: () => [1, 2, 3, 4]
+            });
+            """
+
+            # Script 3: Mock languages
+            script_languages = """
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['en-US', 'en']
+            });
+            """
+
+            # Script 4: Override permissions
+            script_permissions = """
+            const originalQuery = window.navigator.permissions.query;
+            window.navigator.permissions.query = (parameters) => (
+                parameters.name === 'notifications' ?
+                Promise.resolve({ state: Notification.permission }) :
+                originalQuery(parameters)
+            );
+            """
+
+            # Script 5: Mock Chrome runtime
+            script_chrome = """
+            window.chrome = {
+                runtime: {}
+            };
+            """
+
+            # Script 6: Mock user agent data
+            script_ua = """
+            Object.defineProperty(navigator, 'platform', {
+                get: () => 'Linux x86_64'
+            });
+            Object.defineProperty(navigator, 'vendor', {
+                get: () => 'Google Inc.'
+            });
+            """
+
+            # Script 7: Hide headless-specific properties
+            script_headless = """
+            Object.defineProperty(navigator, 'maxTouchPoints', {
+                get: () => 1
+            });
+            Object.defineProperty(navigator, 'hardwareConcurrency', {
+                get: () => 8
+            });
+            Object.defineProperty(navigator, 'deviceMemory', {
+                get: () => 8
+            });
+            """
+
+            # Combine all scripts
+            stealth_script = "\n".join(
+                [
+                    script_webdriver,
+                    script_plugins,
+                    script_languages,
+                    script_permissions,
+                    script_chrome,
+                    script_ua,
+                    script_headless,
+                ]
+            )
+
+            # Execute stealth script
+            self.driver.execute_cdp_cmd(
+                "Page.addScriptToEvaluateOnNewDocument", {"source": stealth_script}
+            )
+
+            self.logger.debug("✓ Stealth scripts applied successfully")
+
+        except Exception as e:
+            self.logger.warning(f"Could not apply stealth scripts: {e}")
+            self.logger.warning("Headless mode may be detectable, but will continue...")
 
     def _setup_request_interception(self):
         """Setup request interception to block ads using Chrome DevTools Protocol"""

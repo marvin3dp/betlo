@@ -168,16 +168,36 @@ mkdir -p logs screenshots extensions
 
 ### Step 4: Configure for Headless Mode
 
-Edit `config.yaml`:
+**IMPORTANT:** Bot will **auto-detect VPS environment** and enable headless mode
+automatically if no display is found!
+
+However, it's recommended to explicitly set it in `config.yaml`:
 
 ```yaml
 browser:
-  headless: true # PENTING untuk VPS!
+  headless: true # Recommended for VPS (auto-detected if not set)
   window_size: "1920,1080"
 
 logging:
   level: INFO # atau DEBUG untuk troubleshooting
 ```
+
+**Auto-Detection Features:**
+
+- ✓ Checks for `$DISPLAY` environment variable
+- ✓ Checks for Xvfb virtual display
+- ✓ Auto-enables headless if no display found
+- ✓ Prevents "chrome not reachable" errors on VPS
+- ✓ Shows clear warning in logs when auto-enabled
+
+**Stealth Mode (NEW! 🎭):**
+
+- ✓ JavaScript injection to hide headless indicators
+- ✓ Mock browser properties (plugins, languages, etc)
+- ✓ Override navigator.webdriver property
+- ✓ Makes headless mode undetectable by websites
+- ✓ Automatic - no configuration needed!
+- ✓ See [HEADLESS_STEALTH.md](./HEADLESS_STEALTH.md) for details
 
 ### Step 5: Run Bot
 
@@ -213,13 +233,40 @@ google-chrome --version
 **Error:** `cannot connect to chrome at 127.0.0.1:XXXXX` atau
 `chrome not reachable`
 
-**Penyebab:** Chrome crash saat startup atau tidak bisa berjalan di VPS
-environment
+**Symptoms:**
 
-**Solusi:**
+- Browser Mode shows "Visible" instead of "Headless"
+- Chrome crashes immediately after starting
+- Error: "session not created: cannot connect to chrome"
+
+**Penyebab:**
+
+- Chrome trying to run in visible mode on VPS (no display available)
+- `$DISPLAY` environment variable not set
+- Headless mode not enabled
+
+**🆕 Auto-Detection (v2.0+):**
+
+Bot sekarang **auto-detect VPS environment** dan akan enable headless mode
+otomatis jika tidak ada display!
+
+Check logs untuk pesan:
+
+```
+⚠ No display detected (VPS/Server environment)
+⚠ Auto-enabling headless mode for stability
+```
+
+Dan browser mode akan menunjukkan:
+
+```
+Browser Mode: Headless (Auto - No Display Detected)
+```
+
+**Manual Fixes (jika auto-detection tidak bekerja):**
 
 ```bash
-# 1. Pastikan headless mode aktif
+# 1. Manually set headless mode
 nano config.yaml
 # Set: headless: true
 
