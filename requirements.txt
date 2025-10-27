@@ -28,7 +28,7 @@ setuptools>=68.0.0  # Required for Python 3.12+ (provides distutils)
 python-dateutil==2.8.2
 
 # Code formatters and linters (for development)
-black==23.12.1
+black==24.3.0
 isort==5.13.2
 autopep8==2.0.4
 flake8==7.0.0
