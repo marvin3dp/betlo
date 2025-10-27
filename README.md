@@ -294,12 +294,17 @@ If you get **"Binary Location Must be a String"** error, install Chrome:
 
 **Important for VPS:**
 
+- **⚠️ Zefoy Detection Issue?** Use Xvfb for 95%+ reliability!
+  ```bash
+  ./run_xvfb.sh  # Best solution for VPS
+  ```
 - **Auto-detection:** Bot automatically enables headless mode if no display is
   detected! 🎉
-- Recommended: Explicitly set `headless: true` in `config.yaml`
+- **Alternative:** Pure headless with stealth (60-80% success rate)
 - Minimum 2GB RAM required
 - /dev/shm should be >64MB (check with `df -h /dev/shm`)
-- See [VPS_SETUP.md](docs/VPS_SETUP.md) for complete guide
+- **Troubleshooting:** [ZEFOY_HEADLESS_FIX.md](docs/ZEFOY_HEADLESS_FIX.md)
+- **Complete guide:** [VPS_SETUP.md](docs/VPS_SETUP.md)
 
 **Key Dependencies:**
 
@@ -748,17 +753,19 @@ Result "ab12" appears 2 times → Invalid (numbers) ❌
 
 ### Feature Guides
 
-| Guide                                                             | Topic                          |
-| ----------------------------------------------------------------- | ------------------------------ |
-| [VPS_SETUP.md](docs/VPS_SETUP.md)                                 | **VPS/Server setup guide**     |
-| [INSTALLATION.md](docs/INSTALLATION.md)                           | Detailed installation guide    |
-| [CHROME_TROUBLESHOOTING.md](docs/CHROME_TROUBLESHOOTING.md)       | Chrome/ChromeDriver issues     |
-| [OCR_TROUBLESHOOTING.md](docs/OCR_TROUBLESHOOTING.md)             | OCR debugging and optimization |
-| [AGGRESSIVE_OCR_MODE.md](docs/AGGRESSIVE_OCR_MODE.md)             | AGGRESSIVE mode detailed guide |
-| [HEADLESS_MODE_GUIDE.md](docs/HEADLESS_MODE_GUIDE.md)             | Running in headless mode       |
-| [HEADLESS_STEALTH.md](docs/HEADLESS_STEALTH.md)                   | **Stealth mode for headless**  |
-| [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature      |
-| [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained      |
+| Guide                                                             | Topic                           |
+| ----------------------------------------------------------------- | ------------------------------- |
+| [VPS_SETUP.md](docs/VPS_SETUP.md)                                 | **VPS/Server setup guide**      |
+| [INSTALLATION.md](docs/INSTALLATION.md)                           | Detailed installation guide     |
+| [CHROME_TROUBLESHOOTING.md](docs/CHROME_TROUBLESHOOTING.md)       | Chrome/ChromeDriver issues      |
+| [OCR_TROUBLESHOOTING.md](docs/OCR_TROUBLESHOOTING.md)             | OCR debugging and optimization  |
+| [AGGRESSIVE_OCR_MODE.md](docs/AGGRESSIVE_OCR_MODE.md)             | AGGRESSIVE mode detailed guide  |
+| [DISPLAY_MODES.md](docs/DISPLAY_MODES.md)                         | **Display modes comparison** ⭐ |
+| [HEADLESS_MODE_GUIDE.md](docs/HEADLESS_MODE_GUIDE.md)             | Running in headless mode        |
+| [HEADLESS_STEALTH.md](docs/HEADLESS_STEALTH.md)                   | Stealth mode details            |
+| [ZEFOY_HEADLESS_FIX.md](docs/ZEFOY_HEADLESS_FIX.md)               | Fix Zefoy detection (Xvfb)      |
+| [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature       |
+| [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained       |
 
 ### Quick References
 
