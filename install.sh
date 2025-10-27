@@ -39,44 +39,72 @@ else
     exit 1
 fi
 
-# Check if python3-venv is installed
-echo ""
-echo "🔍 Checking python3-venv..."
-if python3 -m venv --help &> /dev/null; then
-    echo "✓ python3-venv is installed"
-else
-    echo "✗ python3-venv is not installed!"
+# Check for missing packages on Ubuntu/Debian
+if [ "$OS" = "Linux" ] && command -v apt &> /dev/null; then
+    MISSING_PACKAGES=""
+    APT_UPDATED=false
+
+    # Check python3-venv
     echo ""
-    echo "Install it with:"
-    if [ "$OS" = "macOS" ]; then
-        echo "macOS: brew install python3 (includes venv)"
+    echo "🔍 Checking python3-venv..."
+    if python3 -m venv --help &> /dev/null; then
+        echo "✓ python3-venv is installed"
     else
-        echo "Ubuntu/Debian: sudo apt install python3-venv python3-full"
+        echo "✗ python3-venv is not installed!"
+        MISSING_PACKAGES="$MISSING_PACKAGES python3-venv"
+    fi
+
+    # Check python3-full (required for Python 3.12+)
+    echo ""
+    echo "🔍 Checking python3-full (required for Python 3.12+)..."
+    if command -v dpkg &> /dev/null && dpkg -l | grep -q "python3-full"; then
+        echo "✓ python3-full is installed"
+    else
+        echo "✗ python3-full is not installed!"
+        MISSING_PACKAGES="$MISSING_PACKAGES python3-full"
+    fi
+
+    # Install missing packages
+    if [ -n "$MISSING_PACKAGES" ]; then
+        echo ""
+        echo "📦 Installing missing packages:$MISSING_PACKAGES"
+        echo "Running: sudo apt update && sudo apt install$MISSING_PACKAGES -y"
+        echo ""
+
+        sudo apt update && sudo apt install$MISSING_PACKAGES -y
+
+        if [ $? -eq 0 ]; then
+            echo "✓ All packages installed successfully"
+        else
+            echo "✗ Failed to install packages"
+            echo "Please try manually: sudo apt install$MISSING_PACKAGES"
+            exit 1
+        fi
+    fi
+elif [ "$OS" = "macOS" ]; then
+    # Check python3-venv on macOS
+    echo ""
+    echo "🔍 Checking python3-venv..."
+    if python3 -m venv --help &> /dev/null; then
+        echo "✓ python3-venv is installed"
+    else
+        echo "✗ python3-venv is not installed!"
+        echo "macOS: brew install python3 (includes venv)"
+        exit 1
+    fi
+else
+    # Other Linux distros
+    echo ""
+    echo "🔍 Checking python3-venv..."
+    if python3 -m venv --help &> /dev/null; then
+        echo "✓ python3-venv is installed"
+    else
+        echo "✗ python3-venv is not installed!"
+        echo ""
+        echo "Install it with:"
         echo "Fedora: sudo dnf install python3-venv"
         echo "Arch: sudo pacman -S python-virtualenv"
-    fi
-    exit 1
-fi
-
-# Check for python3-full on Debian/Ubuntu (required for Python 3.12+)
-if [ "$OS" = "Linux" ]; then
-    if command -v dpkg &> /dev/null; then
-        echo ""
-        echo "🔍 Checking python3-full (required for Python 3.12+)..."
-        if dpkg -l | grep -q "python3-full"; then
-            echo "✓ python3-full is installed"
-        else
-            echo "✗ python3-full is not installed!"
-            echo ""
-            echo "This is required for Python 3.12+ on Debian/Ubuntu"
-            echo "Install it with:"
-            echo "  sudo apt install python3-full"
-            echo ""
-            read -p "Continue anyway? (not recommended) [y/N]: " continue_anyway
-            if [[ ! $continue_anyway =~ ^[Yy]$ ]]; then
-                exit 1
-            fi
-        fi
+        exit 1
     fi
 fi
 
