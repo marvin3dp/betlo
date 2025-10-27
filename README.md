@@ -357,7 +357,22 @@ python run.py
 
 ## 💡 Usage
 
-### Quick Start
+### Quick Start (Smart Auto-Detect) ⭐ **RECOMMENDED**
+
+The **easiest way** - automatically detects your environment and chooses the best mode:
+
+```bash
+./venv.sh
+```
+
+**What it does:**
+- ✅ **Desktop/Laptop** → Runs in visible mode (99% success)
+- ✅ **VPS with Xvfb** → Uses virtual display (95%+ success)
+- ✅ **VPS without Xvfb** → Auto-installs Xvfb or falls back to headless
+
+This is the smartest way to run the bot - it picks the optimal mode for you!
+
+### Manual Start
 
 1. **Start the bot:**
 
