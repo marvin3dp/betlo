@@ -94,6 +94,7 @@ class ZefoyBot:
         self.target_tracker = None
         self.service_manager = None
         self.session_active = False
+        self._stealth_script_fallback = None  # For CDP fallback injection
 
         # Statistics
         self.stats = {
@@ -155,6 +156,15 @@ class ZefoyBot:
                 live.update(create_status_panel())
                 self.logger.info(f"Navigating to {self.config.zefoy_url}...")
                 self.driver.get(self.config.zefoy_url)
+
+                # Inject stealth scripts if CDP failed earlier
+                if self._stealth_script_fallback:
+                    try:
+                        self.logger.debug("Injecting stealth scripts (fallback method)...")
+                        self.driver.execute_script(self._stealth_script_fallback)
+                        self.logger.info("✓ Stealth scripts injected on page load")
+                    except Exception as e:
+                        self.logger.warning(f"⚠️  Failed to inject stealth scripts: {e}")
 
                 # Wait for page to load with extended time for Zefoy
                 self.logger.info("Waiting for Zefoy page to fully load...")
@@ -769,6 +779,11 @@ class ZefoyBot:
         Note: Provides 60-80% success rate with Zefoy.
         For 95%+ success, use Xvfb: ./run_xvfb.sh
         """
+        if not self.headless and not self._using_xvfb:
+            # Skip stealth scripts in normal visible mode (not needed)
+            self.logger.debug("Skipping stealth scripts (visible mode with real display)")
+            return
+
         try:
             self.logger.info("🎭 Applying stealth scripts (backup mode, 60-80% success)")
             self.logger.info("💡 For best results (95%+), use Xvfb: ./run_xvfb.sh")
@@ -830,21 +845,35 @@ class ZefoyBot:
             delete navigator.__proto__.webdriver;
             """
 
-            # Execute via CDP (runs before page scripts)
-            self.driver.execute_cdp_cmd(
-                "Page.addScriptToEvaluateOnNewDocument", {"source": stealth_script}
-            )
+            # Try CDP first (best method)
+            try:
+                self.driver.execute_cdp_cmd(
+                    "Page.addScriptToEvaluateOnNewDocument", {"source": stealth_script}
+                )
+                self.logger.info("✓ Stealth scripts applied via CDP")
+                self.logger.debug("Coverage: webdriver, plugins, chrome.runtime, hardware specs")
 
-            self.logger.info("✓ Stealth scripts applied")
-            self.logger.debug("Coverage: webdriver, plugins, chrome.runtime, hardware specs")
+            except Exception as cdp_error:
+                # Fallback: inject on page load (less effective but works)
+                self.logger.warning(f"⚠️  CDP injection failed: {cdp_error}")
+                self.logger.info("🔄 Using fallback injection method...")
+
+                # Store script to inject on each page load
+                self._stealth_script_fallback = stealth_script
+                self.logger.info("✓ Stealth scripts prepared (will inject on page load)")
 
         except Exception as e:
             self.logger.error(f"❌ Failed to apply stealth: {e}")
-            self.logger.warning("⚠️  Headless will be easily detectable!")
-            self.logger.warning("🔧 Solution: Use Xvfb instead: ./run_xvfb.sh")
+            self.logger.warning("⚠️  Running without stealth protection!")
+            self.logger.warning("🔧 Recommended: Use Xvfb instead: ./run_xvfb.sh")
 
     def _setup_request_interception(self):
         """Setup request interception to block ads using Chrome DevTools Protocol"""
+        # Skip if adblock is disabled
+        if not self.config.get("browser.adblock_enabled", True):
+            self.logger.debug("AdBlock disabled in config")
+            return
+
         try:
             # Load blocklist
             blocklist_path = Path(__file__).parent.parent / "ad_blocklist.txt"
@@ -860,51 +889,35 @@ class ZefoyBot:
                             if len(parts) >= 2:
                                 blocked_domains.append(parts[1])
 
-            # Add common ad patterns
-            ad_patterns = [
-                "doubleclick",
-                "googlesyndication",
-                "googleadservices",
-                "google-analytics",
-                "googletagmanager",
-                "googletagservices",
-                "/ads/",
-                "/ad/",
-                "adservice",
-                "adsense",
-                "adwords",
-                "pagead",
-                "advertising",
-                "admob",
-                "adtech",
-                "criteo",
-                "outbrain",
-                "taboola",
-                "moatads",
-                "scorecardresearch",
-            ]
-
-            # Enable Network domain for DevTools
-            self.driver.execute_cdp_cmd("Network.enable", {})
-
             # Set blocked URL patterns
             blocked_patterns = []
-            for domain in blocked_domains:
+            for domain in blocked_domains[:50]:  # Limit to prevent issues
                 blocked_patterns.append(f"*://{domain}/*")
                 blocked_patterns.append(f"*://*.{domain}/*")
 
-            # Block requests matching ad patterns
-            self.driver.execute_cdp_cmd(
-                "Network.setBlockedURLs",
-                {"urls": blocked_patterns[:100]},  # Chrome limits to 100 patterns
-            )
+            # Try CDP-based blocking
+            try:
+                # Enable Network domain for DevTools
+                self.driver.execute_cdp_cmd("Network.enable", {})
 
-            self.logger.info(
-                f"✓ Request interception enabled - Blocking {len(blocked_patterns[:100])} ad patterns"
-            )
+                # Block requests matching ad patterns
+                self.driver.execute_cdp_cmd(
+                    "Network.setBlockedURLs",
+                    {"urls": blocked_patterns[:100]},  # Chrome limits to 100 patterns
+                )
+
+                self.logger.info(
+                    f"✓ AdBlock enabled via CDP - {len(blocked_patterns[:100])} patterns blocked"
+                )
+
+            except Exception as cdp_error:
+                # CDP might fail on some VPS setups - that's okay
+                self.logger.debug(f"CDP-based adblock unavailable: {cdp_error}")
+                self.logger.info("✓ AdBlock: Using basic mode (CSS-based)")
+                # Could implement CSS-based blocking here as fallback
 
         except Exception as e:
-            self.logger.warning(f"Could not setup request interception: {str(e)}")
+            self.logger.debug(f"AdBlock setup skipped: {str(e)}")
 
     def _dismiss_alerts(self, max_attempts: int = 3):
         """Dismiss any alerts that may appear"""

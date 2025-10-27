@@ -329,13 +329,11 @@ Include:
 
 The bot now includes:
 
-✅ **Extended wait times** (8-10s for Zefoy page load)
-✅ **3 retry attempts** for captcha detection
-✅ **Automatic diagnostic saving** when captcha not found
-✅ **Better page ready state checking**
-✅ **Comprehensive debug reports** (HTML + screenshot + diagnostic)
-✅ **Element detection logging**
-✅ **Xvfb mode detection**
+✅ **Extended wait times** (8-10s for Zefoy page load) ✅ **3 retry attempts**
+for captcha detection ✅ **Automatic diagnostic saving** when captcha not found
+✅ **Better page ready state checking** ✅ **Comprehensive debug reports**
+(HTML + screenshot + diagnostic) ✅ **Element detection logging** ✅ **Xvfb mode
+detection**
 
 These improvements significantly increase success rate, especially with Xvfb.
 
@@ -350,5 +348,5 @@ These improvements significantly increase success rate, especially with Xvfb.
 
 ---
 
-**Last Updated:** October 27, 2025
-**Bot Version:** Latest (with enhanced Zefoy detection)
+**Last Updated:** October 27, 2025 **Bot Version:** Latest (with enhanced Zefoy
+detection)

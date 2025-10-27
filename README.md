@@ -764,6 +764,8 @@ Result "ab12" appears 2 times → Invalid (numbers) ❌
 | [HEADLESS_MODE_GUIDE.md](docs/HEADLESS_MODE_GUIDE.md)             | Running in headless mode        |
 | [HEADLESS_STEALTH.md](docs/HEADLESS_STEALTH.md)                   | Stealth mode details            |
 | [ZEFOY_HEADLESS_FIX.md](docs/ZEFOY_HEADLESS_FIX.md)               | Fix Zefoy detection (Xvfb)      |
+| [ZEFOY_DETECTION_FIX.md](docs/ZEFOY_DETECTION_FIX.md)             | **Captcha not detected fix** ⚠️ |
+| [VPS_CDP_FIX.md](docs/VPS_CDP_FIX.md)                             | **Runtime.evaluate error** ⚠️   |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](docs/AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha feature       |
 | [COOLDOWN.md](docs/COOLDOWN.md)                                   | Cooldown system explained       |
 
