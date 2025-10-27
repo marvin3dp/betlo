@@ -2011,7 +2011,7 @@ class CaptchaSolver:
 
     def is_captcha_present(self, timeout: int = 3) -> bool:
         """
-        Check if captcha is present on page
+        Check if captcha is present on page (with multiple detection methods)
 
         Args:
             timeout: Maximum wait time
@@ -2019,5 +2019,36 @@ class CaptchaSolver:
         Returns:
             True if captcha present, False otherwise
         """
-        captcha_element = wait_for_element(self.driver, By.ID, "captchatoken", timeout=timeout)
-        return captcha_element is not None
+        try:
+            # Method 1: Direct element check (fastest)
+            captcha_element = wait_for_element(self.driver, By.ID, "captchatoken", timeout=timeout)
+            if captcha_element:
+                self.logger.debug("✓ Captcha found via direct element check")
+                return True
+
+            # Method 2: JavaScript check (more reliable in headless)
+            try:
+                js_check = self.driver.execute_script(
+                    "return document.getElementById('captchatoken') !== null"
+                )
+                if js_check:
+                    self.logger.debug("✓ Captcha found via JavaScript check")
+                    return True
+            except Exception as e:
+                self.logger.debug(f"JavaScript captcha check failed: {e}")
+
+            # Method 3: Check page source (last resort)
+            try:
+                page_source = self.driver.page_source
+                if 'id="captchatoken"' in page_source or "captchatoken" in page_source:
+                    self.logger.debug("✓ Captcha found in page source")
+                    return True
+            except Exception as e:
+                self.logger.debug(f"Page source captcha check failed: {e}")
+
+            self.logger.debug("✗ Captcha not found (all methods)")
+            return False
+
+        except Exception as e:
+            self.logger.warning(f"Error checking captcha presence: {e}")
+            return False

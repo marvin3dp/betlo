@@ -157,7 +157,11 @@ class ZefoyBot:
                 self.logger.info(f"Navigating to {self.config.zefoy_url}...")
                 self.driver.get(self.config.zefoy_url)
 
-                # Inject stealth scripts if CDP failed earlier
+                # Wait a moment for initial page structure
+                self.logger.info("Waiting for Zefoy page to load...")
+                random_delay(2, 3)
+
+                # Inject stealth scripts if CDP failed earlier (must be done early)
                 if self._stealth_script_fallback:
                     try:
                         self.logger.debug("Injecting stealth scripts (fallback method)...")
@@ -166,20 +170,30 @@ class ZefoyBot:
                     except Exception as e:
                         self.logger.warning(f"⚠️  Failed to inject stealth scripts: {e}")
 
-                # Wait for page to load with extended time for Zefoy
-                self.logger.info("Waiting for Zefoy page to fully load...")
-                if self.headless or self._using_xvfb:
-                    self.logger.debug("Headless/Xvfb mode: Extended wait for full rendering...")
-                    random_delay(8, 10)  # Even longer for Zefoy
-                else:
-                    random_delay(5, 6)
-
-                # Wait for page ready state
+                # Wait for page ready state first
+                self.logger.debug("Checking page ready state...")
                 self._wait_for_page_ready()
 
-                # Additional wait for Zefoy's dynamic content
-                self.logger.debug("Waiting for Zefoy dynamic content to load...")
+                # Extended wait for Zefoy to fully render (especially in headless)
+                if self.headless or self._using_xvfb:
+                    self.logger.info("⏳ Headless/Xvfb mode: Extended wait for full rendering...")
+                    random_delay(10, 12)  # Even longer for Zefoy in headless
+                else:
+                    self.logger.info("⏳ Waiting for dynamic content...")
+                    random_delay(5, 7)
+
+                # Additional wait specifically for Zefoy's dynamic content
+                self.logger.debug("Waiting for Zefoy dynamic elements...")
                 random_delay(3, 5)
+
+                # Force a scroll to trigger lazy-loaded elements (important for headless)
+                try:
+                    self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    random_delay(1, 2)
+                    self.driver.execute_script("window.scrollTo(0, 0);")
+                    self.logger.debug("✓ Page scrolled to trigger lazy-loaded elements")
+                except Exception:
+                    pass
 
                 status_messages.append("[green]✓ Page loaded[/green]")
                 live.update(create_status_panel())
@@ -198,16 +212,36 @@ class ZefoyBot:
 
                 self.captcha_solver = CaptchaSolver(self.driver, self.config, self.logger)
 
-                # Try multiple times to detect captcha (Zefoy loads slowly)
+                # Try multiple times to detect captcha (Zefoy loads slowly, especially in headless)
+                max_attempts = 5 if (self.headless or self._using_xvfb) else 3
                 captcha_found = False
-                for attempt in range(3):
-                    self.logger.debug(f"Captcha detection attempt {attempt + 1}/3...")
+
+                self.logger.info(
+                    f"🔍 Detecting captcha ({max_attempts} attempts, 10s timeout each)..."
+                )
+                for attempt in range(max_attempts):
+                    self.logger.debug(f"Captcha detection attempt {attempt + 1}/{max_attempts}...")
+
+                    # Check with generous timeout
                     if self.captcha_solver.is_captcha_present(timeout=10):
                         captcha_found = True
+                        self.logger.info(f"✓ Captcha detected on attempt {attempt + 1}")
                         break
-                    if attempt < 2:
-                        self.logger.debug("Captcha not found yet, waiting...")
-                        random_delay(3, 5)
+
+                    # If not found, wait and try again
+                    if attempt < max_attempts - 1:
+                        wait_time = 5 if (self.headless or self._using_xvfb) else 3
+                        self.logger.debug(
+                            f"Captcha not found yet, waiting {wait_time}s before retry..."
+                        )
+                        random_delay(wait_time, wait_time + 2)
+
+                        # Refresh page check (ensure page is still responsive)
+                        try:
+                            current_url = self.driver.current_url
+                            self.logger.debug(f"Current URL: {current_url}")
+                        except Exception as e:
+                            self.logger.warning(f"Page check failed: {e}")
 
                 if captcha_found:
                     status_messages.append("[yellow]⚠ Captcha detected! Solving...[/yellow]")
@@ -231,15 +265,40 @@ class ZefoyBot:
                     self.stats["captchas_solved"] += 1
                 else:
                     # Captcha not found after multiple attempts
-                    self.logger.warning("⚠️  Captcha not detected after 3 attempts")
-                    self.logger.info("💡 This may indicate:")
-                    self.logger.info("   1. Captcha already solved in previous session")
-                    self.logger.info("   2. Page loaded incorrectly")
-                    self.logger.info("   3. Zefoy changed their captcha system")
+                    self.logger.warning(f"⚠️  Captcha not detected after {max_attempts} attempts")
+                    self.logger.warning("")
+                    self.logger.warning("💡 Possible reasons:")
+                    self.logger.warning(
+                        "   1. Captcha already solved (cookies from previous session)"
+                    )
+                    self.logger.warning("   2. Page didn't load correctly (Cloudflare/rate limit)")
+                    self.logger.warning("   3. Zefoy changed their page structure")
+                    self.logger.warning("   4. Headless detection blocked the page")
+                    self.logger.warning("")
 
                     # Save page source for diagnosis
-                    self.logger.info("📸 Saving page source for diagnosis...")
+                    self.logger.info("📸 Saving diagnostic information...")
                     self._debug_save_page_source("no_captcha_found")
+
+                    # Provide mode-specific recommendations
+                    if self.headless and not self._using_xvfb:
+                        self.logger.warning("🔧 Recommendations for headless mode:")
+                        self.logger.warning("   1. BEST: Use Xvfb instead: ./run_xvfb.sh")
+                        self.logger.warning("   2. Check debug/ folder for screenshot")
+                        self.logger.warning("   3. Try visible mode if on desktop")
+                        self.logger.warning("")
+                        self.logger.warning("⚠️  Pure headless has 60-80% success rate with Zefoy")
+                        self.logger.warning("   Xvfb provides 95%+ success rate!")
+                    else:
+                        self.logger.info("🔧 Troubleshooting:")
+                        self.logger.info("   1. Check debug/ folder: ls -lh debug/")
+                        self.logger.info(
+                            "   2. View screenshot: debug/screenshot_no_captcha_found_*.png"
+                        )
+                        self.logger.info(
+                            "   3. Read diagnostic: debug/diagnostic_no_captcha_found_*.txt"
+                        )
+                        self.logger.info("   4. Run test: ./test_zefoy.sh")
 
                     status_messages.append(
                         "[yellow]⚠ No captcha detected - Check debug folder[/yellow]"
@@ -557,18 +616,26 @@ class ZefoyBot:
                     driver_executable_path=None,
                 )
 
-                # Enable ad-blocking via Chrome DevTools Protocol
-                if self.config.use_adblock:
-                    self._setup_request_interception()
-
                 self.driver.maximize_window()
 
                 # Set timeouts
                 self.driver.set_page_load_timeout(self.config.get("timeouts.page_load", 30))
 
                 # Apply stealth scripts for headless mode
+                # Note: Must be non-blocking (errors caught internally)
                 if self.headless:
-                    self._apply_stealth_scripts()
+                    try:
+                        self._apply_stealth_scripts()
+                    except Exception as stealth_error:
+                        self.logger.debug(f"Stealth scripts skipped: {stealth_error}")
+
+                # Enable ad-blocking via Chrome DevTools Protocol
+                # Note: Must be non-blocking (errors caught internally)
+                if self.config.use_adblock:
+                    try:
+                        self._setup_request_interception()
+                    except Exception as adblock_error:
+                        self.logger.debug(f"AdBlock setup skipped: {adblock_error}")
 
                 self.logger.success("Browser initialized successfully")
 
@@ -778,13 +845,15 @@ class ZefoyBot:
 
         Note: Provides 60-80% success rate with Zefoy.
         For 95%+ success, use Xvfb: ./run_xvfb.sh
-        """
-        if not self.headless and not self._using_xvfb:
-            # Skip stealth scripts in normal visible mode (not needed)
-            self.logger.debug("Skipping stealth scripts (visible mode with real display)")
-            return
 
+        This function is designed to NEVER throw exceptions to avoid
+        disrupting browser setup. All errors are caught and logged only.
+        """
         try:
+            if not self.headless and not self._using_xvfb:
+                # Skip stealth scripts in normal visible mode (not needed)
+                self.logger.debug("Skipping stealth scripts (visible mode with real display)")
+                return
             self.logger.info("🎭 Applying stealth scripts (backup mode, 60-80% success)")
             self.logger.info("💡 For best results (95%+), use Xvfb: ./run_xvfb.sh")
 
@@ -868,13 +937,18 @@ class ZefoyBot:
             self.logger.warning("🔧 Recommended: Use Xvfb instead: ./run_xvfb.sh")
 
     def _setup_request_interception(self):
-        """Setup request interception to block ads using Chrome DevTools Protocol"""
-        # Skip if adblock is disabled
-        if not self.config.get("browser.adblock_enabled", True):
-            self.logger.debug("AdBlock disabled in config")
-            return
+        """
+        Setup request interception to block ads using Chrome DevTools Protocol
 
+        Note: This function is designed to NEVER throw exceptions to avoid
+        disrupting browser setup. All errors are caught and logged only.
+        """
         try:
+            # Skip if adblock is disabled
+            if not self.config.get("browser.adblock_enabled", True):
+                self.logger.debug("AdBlock disabled in config")
+                return
+
             # Load blocklist
             blocklist_path = Path(__file__).parent.parent / "ad_blocklist.txt"
             blocked_domains = []
@@ -913,11 +987,13 @@ class ZefoyBot:
             except Exception as cdp_error:
                 # CDP might fail on some VPS setups - that's okay
                 self.logger.debug(f"CDP-based adblock unavailable: {cdp_error}")
-                self.logger.info("✓ AdBlock: Using basic mode (CSS-based)")
-                # Could implement CSS-based blocking here as fallback
+                self.logger.info("✓ AdBlock: Using DNS-based blocking only")
+                # DNS-based blocking is already configured in prefs
 
         except Exception as e:
+            # Catch ALL exceptions to prevent browser setup failure
             self.logger.debug(f"AdBlock setup skipped: {str(e)}")
+            # Continue without adblock - browser will still work
 
     def _dismiss_alerts(self, max_attempts: int = 3):
         """Dismiss any alerts that may appear"""

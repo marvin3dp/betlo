@@ -283,6 +283,5 @@ if self._stealth_script_fallback:
 
 ---
 
-**Last Updated:** October 27, 2025
-**Issue:** Runtime.evaluate CDP error on VPS
+**Last Updated:** October 27, 2025 **Issue:** Runtime.evaluate CDP error on VPS
 **Status:** ✅ FIXED (Graceful fallback implemented)
