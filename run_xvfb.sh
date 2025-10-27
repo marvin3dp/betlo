@@ -49,7 +49,8 @@ export DISPLAY=:99
 pkill -f "Xvfb :99" 2> /dev/null
 
 echo "🚀 Starting Xvfb virtual display..."
-Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &
+# Suppress xkbcomp warnings (they are harmless)
+Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset 2> /dev/null &
 XVFB_PID=$!
 
 # Wait for Xvfb to start
@@ -58,6 +59,7 @@ sleep 2
 # Check if Xvfb is running
 if ps -p $XVFB_PID > /dev/null; then
     echo "✓ Xvfb running on display :99"
+    echo "  (Note: Any xkbcomp warnings are harmless and suppressed)"
 else
     echo "❌ Failed to start Xvfb"
     exit 1

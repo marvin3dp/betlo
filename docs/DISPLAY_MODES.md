@@ -281,6 +281,22 @@ pkill Xvfb
 ./run_xvfb.sh
 ```
 
+**⚠️ xkbcomp Warnings (SAFE TO IGNORE)**
+
+If you see warnings like:
+
+```
+Could not resolve keysym XF86CameraAccessEnable
+Could not resolve keysym XF86NextElement
+...
+Errors from xkbcomp are not fatal to the X server
+```
+
+- ✅ **These are harmless** - Xvfb works perfectly
+- ✅ **Already suppressed** - Script hides these by default
+- ✅ **No action needed** - Bot will run normally
+- 💡 The message confirms: "not fatal to the X server"
+
 ### Headless + Stealth Issues:
 
 ```bash

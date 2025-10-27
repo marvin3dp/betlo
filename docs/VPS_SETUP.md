@@ -271,6 +271,9 @@ nano config.yaml
 - 95%+ success rate vs 60-80% with pure headless
 - No detection issues
 
+**Note:** You may see xkbcomp warnings when starting Xvfb - these are harmless
+and already suppressed by the script.
+
 **See Complete Guide:** [ZEFOY_HEADLESS_FIX.md](./ZEFOY_HEADLESS_FIX.md)
 
 ---
