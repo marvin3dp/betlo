@@ -301,7 +301,7 @@ main() {
     echo ""
     echo -e "${BLUE}💡 Next steps:${NC}"
     echo -e "${BLUE}   1. Review changes: git diff${NC}"
-    echo -e "${BLUE}   2. Stage changes: git add .${NC}"
+    echo -e "${BLUE}   2. Stage changes: git add -A${NC}"
     echo -e "${BLUE}   3. Commit: git commit -m \"Format all files\"${NC}"
     echo -e "${BLUE}   4. Push: git push${NC}"
     echo ""

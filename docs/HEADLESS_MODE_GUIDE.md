@@ -246,13 +246,50 @@ captcha:
 
 **Best for:** Reduce manual work (if OCR works well)
 
+### Workflow 5: VPS/Remote Server with Cloud Upload ☁️ **NEW!**
+
+```yaml
+browser:
+  headless: true
+
+captcha:
+  auto_solve: false
+  manual_input: true
+  save_image: true
+  auto_open_image: false # No GUI on VPS
+  upload_to_cloud: true # ✅ Upload to uploader.sh
+  cloud_uploader_url: https://uploader.sh
+```
+
+**Best for:** VPS/remote servers without GUI
+
+**How it works:**
+
+1. Bot detects captcha
+2. Automatically uploads image to uploader.sh
+3. Displays URL in terminal (e.g., `https://uploader.sh/captcha_123.png`)
+4. Open URL in your local browser/phone
+5. View captcha and input text in VPS terminal
+6. Done!
+
+**Perfect for:**
+
+- ✅ Running bot on VPS/cloud servers
+- ✅ SSH sessions without X forwarding
+- ✅ Remote access from mobile devices
+- ✅ No need for image viewer installation
+
+**See:** [docs/CLOUD_CAPTCHA_UPLOAD.md](CLOUD_CAPTCHA_UPLOAD.md) for detailed
+guide
+
 ## 📊 Performance Comparison
 
-| Mode                     | RAM Usage          | CPU Usage | Speed     | Captcha Method     |
-| ------------------------ | ------------------ | --------- | --------- | ------------------ |
-| **Headless + Auto-Open** | 🟢 Low (~400MB)    | 🟢 Low    | 🟢 Fast   | Auto-open image    |
-| Non-Headless             | 🟡 Medium (~600MB) | 🟡 Medium | 🟡 Normal | See in browser     |
-| Headless + Manual Open   | 🟢 Low (~400MB)    | 🟢 Low    | 🔴 Slower | Manual folder open |
+| Mode                           | RAM Usage          | CPU Usage | Speed     | Captcha Method     | Best For           |
+| ------------------------------ | ------------------ | --------- | --------- | ------------------ | ------------------ |
+| **Headless + Cloud Upload** ☁️ | 🟢 Low (~400MB)    | 🟢 Low    | 🟢 Fast   | Cloud URL (VPS)    | VPS/Remote servers |
+| **Headless + Auto-Open**       | 🟢 Low (~400MB)    | 🟢 Low    | 🟢 Fast   | Auto-open image    | Local desktop      |
+| Non-Headless                   | 🟡 Medium (~600MB) | 🟡 Medium | 🟡 Normal | See in browser     | Development        |
+| Headless + Manual Open         | 🟢 Low (~400MB)    | 🟢 Low    | 🔴 Slower | Manual folder open | Advanced users     |
 
 ## 🎯 Recommended Setup
 

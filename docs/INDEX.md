@@ -40,6 +40,7 @@ Detailed guides for specific features.
 | ------------------------------------------------------------ | ------------------------------------- | -------------- |
 | [HEADLESS_MODE_GUIDE.md](HEADLESS_MODE_GUIDE.md)             | Running in headless (background) mode | Power users    |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha for headless mode   | Headless users |
+| [CLOUD_CAPTCHA_UPLOAD.md](CLOUD_CAPTCHA_UPLOAD.md) ☁️        | Upload captcha to cloud for VPS       | VPS users      |
 
 ---
 
@@ -114,6 +115,7 @@ Technical reference and change history.
 - [AGGRESSIVE_OCR_MODE.md](AGGRESSIVE_OCR_MODE.md) - Advanced OCR
 - [AUTO_OPEN_CAPTCHA_FEATURE.md](AUTO_OPEN_CAPTCHA_FEATURE.md) - Auto-open
   feature
+- [CLOUD_CAPTCHA_UPLOAD.md](CLOUD_CAPTCHA_UPLOAD.md) ☁️ - Cloud upload for VPS
 
 **📊 Statistics & Progress:**
 
@@ -158,6 +160,9 @@ Technical reference and change history.
 [OCR_TROUBLESHOOTING.md](OCR_TROUBLESHOOTING.md)
 
 **...run in background** → [HEADLESS_MODE_GUIDE.md](HEADLESS_MODE_GUIDE.md)
+
+**...run on VPS with captcha upload** →
+[CLOUD_CAPTCHA_UPLOAD.md](CLOUD_CAPTCHA_UPLOAD.md) ☁️
 
 **...understand statistics** → [STATISTICS.md](STATISTICS.md)
 
@@ -351,6 +356,7 @@ categories **Languages:** Markdown, YAML, Python examples, Shell scripts
 | [AGGRESSIVE_OCR_MODE.md](AGGRESSIVE_OCR_MODE.md)             | Using AGGRESSIVE mode for difficult captchas                 |
 | [HEADLESS_MODE_GUIDE.md](HEADLESS_MODE_GUIDE.md)             | Running bot in background headless mode                      |
 | [AUTO_OPEN_CAPTCHA_FEATURE.md](AUTO_OPEN_CAPTCHA_FEATURE.md) | Auto-open captcha technical guide                            |
+| [CLOUD_CAPTCHA_UPLOAD.md](CLOUD_CAPTCHA_UPLOAD.md) ☁️        | Upload captcha to cloud for VPS access                       |
 | [COOLDOWN.md](COOLDOWN.md)                                   | Understanding service cooldown system                        |
 | [CHROME_TROUBLESHOOTING.md](CHROME_TROUBLESHOOTING.md)       | Fixing Chrome and ChromeDriver issues                        |
 | [FORMATTING.md](FORMATTING.md)                               | Complete code formatting and style guide                     |

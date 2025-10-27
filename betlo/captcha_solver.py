@@ -56,6 +56,12 @@ class CaptchaSolver:
         self.fast_mode = config.get(
             "captcha.fast_mode", True
         )  # Fast mode for quicker OCR (less combinations)
+        self.upload_to_cloud = config.get(
+            "captcha.upload_to_cloud", False
+        )  # Upload captcha to cloud for VPS access
+        self.cloud_uploader_url = config.get(
+            "captcha.cloud_uploader_url", "https://uploader.sh"
+        )  # Cloud uploader URL
 
         # Advanced OCR settings untuk captcha tidak rata / naik turun
         self.horizontal_reading = config.get("captcha.ocr_advanced.horizontal_reading", True)
@@ -1094,6 +1100,55 @@ class CaptchaSolver:
             self.logger.warning(f"Failed to open image with default app: {str(e)}")
             return False
 
+    def _upload_image_to_cloud(self, image_path: Path) -> Optional[str]:
+        """
+        Upload captcha image to uploader.sh for easy access on VPS
+
+        Args:
+            image_path: Path to captcha image file
+
+        Returns:
+            URL of uploaded image or None if failed
+        """
+        try:
+            import requests
+
+            # Prepare the upload
+            image_name = image_path.name
+            upload_url = f"{self.cloud_uploader_url}/{image_name}"
+
+            self.logger.info(f"Uploading captcha to {self.cloud_uploader_url}...")
+
+            # Read image file
+            with open(image_path, "rb") as f:
+                image_data = f.read()
+
+            # Upload using curl-like request
+            response = requests.post(
+                upload_url,
+                data=image_data,
+                headers={"Content-Type": "application/octet-stream"},
+                timeout=30,
+            )
+
+            if response.status_code == 200:
+                # uploader.sh returns the URL in the response
+                uploaded_url = response.text.strip()
+                self.logger.success(f"✓ Captcha uploaded successfully!")
+                return uploaded_url
+            else:
+                self.logger.warning(f"Upload failed with status code: {response.status_code}")
+                return None
+
+        except ImportError:
+            self.logger.warning(
+                "requests library not available. Install with: pip install requests"
+            )
+            return None
+        except Exception as e:
+            self.logger.warning(f"Failed to upload image to cloud: {str(e)}")
+            return None
+
     def _preprocess_captcha_image(self, image_path: Path):
         """
         Preprocess captcha image for better OCR accuracy
@@ -1376,14 +1431,22 @@ class CaptchaSolver:
         try:
             # Save captcha image for user reference
             img_path = None
+            uploaded_url = None
+
             if self.save_image:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 img_path = self.config.screenshot_path / f"captcha_manual_{timestamp}.png"
                 captcha_img.screenshot(str(img_path))
                 self.logger.info(f"Captcha image saved: {img_path}")
 
-                # Auto-open image with default application (very useful for headless mode!)
-                if self.auto_open_image:
+                # Upload to cloud if enabled (very useful for VPS!)
+                if self.upload_to_cloud:
+                    uploaded_url = self._upload_image_to_cloud(img_path)
+                    if uploaded_url:
+                        self.logger.info(f"Captcha URL: {uploaded_url}")
+
+                # Auto-open image with default application (useful for local desktop)
+                if self.auto_open_image and not self.upload_to_cloud:
                     opened = self._open_image_with_default_app(img_path)
                     if not opened:
                         self.logger.warning(
@@ -1399,10 +1462,20 @@ class CaptchaSolver:
             captcha_content = Text()
             captcha_content.append("🔐 Manual Captcha Required 🔐\n\n", style="bold yellow")
 
-            if img_path and self.auto_open_image:
+            if uploaded_url:
+                # Show cloud URL (perfect for VPS)
+                captcha_content.append("☁️  Captcha uploaded to cloud!\n", style="bold green")
+                captcha_content.append("📎 URL: ", style="bold cyan")
+                captcha_content.append(f"{uploaded_url}\n\n", style="bold white")
+                captcha_content.append(
+                    "💡 Open this URL in your browser to view the captcha\n", style="dim white"
+                )
+            elif img_path and self.auto_open_image:
+                # Local file opened
                 captcha_content.append("📸 Captcha image opened automatically\n", style="bold green")
                 captcha_content.append(f"Location: {img_path.name}\n\n", style="dim white")
             else:
+                # Fallback message
                 captcha_content.append("Please look at the captcha image\n", style="bold white")
                 captcha_content.append("in your browser window\n\n", style="bold white")
 
@@ -1422,6 +1495,28 @@ class CaptchaSolver:
                 )
             )
             console.print()
+
+            # If cloud URL available, display it again in a separate highlighted panel
+            if uploaded_url:
+                from rich.panel import Panel
+                from rich.text import Text
+
+                url_panel = Text()
+                url_panel.append("🌐 Captcha URL:\n", style="bold cyan")
+                url_panel.append(uploaded_url, style="bold white")
+
+                console.print(
+                    Panel(
+                        Align.center(url_panel),
+                        title="[bold cyan]☁️  Cloud Link[/bold cyan]",
+                        title_align="center",
+                        box=box.ROUNDED,
+                        style="cyan",
+                        border_style="cyan",
+                        padding=(1, 2),
+                    )
+                )
+                console.print()
 
             text = BotUI.ask_input("[yellow]Enter captcha text[/yellow]")
 

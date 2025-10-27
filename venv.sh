@@ -1,5 +1,14 @@
 #!/bin/bash
 # Run Zefoy Bot with automatic venv activation
+# Compatible with Linux and macOS
+
+# Detect operating system
+OS_TYPE="$(uname -s)"
+case "${OS_TYPE}" in
+    Linux*) OS="Linux" ;;
+    Darwin*) OS="macOS" ;;
+    *) OS="Unknown" ;;
+esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
@@ -29,7 +38,7 @@ echo "Version: $(python --version)"
 echo ""
 
 # Run the bot
-echo "🚀 Starting Zefoy Bot..."
+echo "🚀 Starting..."
 echo ""
 
 python run.py

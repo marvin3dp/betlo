@@ -81,6 +81,7 @@
 - 📊 **Frequency-based Confidence Scoring** - Selects most reliable result
 - 🐛 **Debug Mode** - Save all preprocessing steps for analysis
 - 🖼️ **Auto-Open Captcha** - Perfect for headless mode
+- ☁️ **Cloud Upload** - Upload captcha to uploader.sh for easy VPS access
 - 🔄 **Manual Input Fallback** - Never gets stuck
 
 ### 🎨 **Modern Terminal UI**
@@ -122,13 +123,13 @@
 
 | Service                | Status     | Rate Limit | Notes          |
 | ---------------------- | ---------- | ---------- | -------------- |
-| ❤️ **Hearts**          | ✅ Active  | ~100/exec  | Most reliable  |
-| 👁️ **Views**           | ✅ Active  | ~1000/exec | High volume    |
+| ❤️ **Hearts**          | ✅ Active  | ~25/exec   | Most reliable  |
+| 👁️ **Views**           | ✅ Active  | ~500/exec  | High volume    |
 | 🔄 **Shares**          | ✅ Active  | ~50/exec   | Fast cooldown  |
 | ⭐ **Favorites**       | ✅ Active  | ~100/exec  | Stable         |
-| 💬 **Comments Hearts** | ✅ Active  | ~50/exec   | Moderate       |
-| 👥 **Followers**       | ⚠️ Offline | -          | Zefoy disabled |
-| 🔴 **Live Stream**     | ⚠️ Offline | -          | Zefoy disabled |
+| 💬 **Comments Hearts** | ✅ Active  | ~25/exec   | Moderate       |
+| 👥 **Followers**       | ⚠️ Offline | ~50/exec   | Zefoy disabled |
+| 🔴 **Live Stream**     | ⚠️ Offline | ~50/exec   | Zefoy disabled |
 
 > **Note:** Service availability depends on Zefoy's status. Bot automatically
 > detects and marks offline services.
@@ -282,7 +283,8 @@ captcha:
   auto_solve: true # Enable OCR
   fast_mode: true # Use FAST mode (recommended)
   manual_input: true # Fallback to manual
-  auto_open_image: true # Auto-open captcha (headless mode!)
+  auto_open_image: true # Auto-open captcha (local mode)
+  upload_to_cloud: false # Upload to uploader.sh (VPS mode)
 
 browser:
   headless: false # Set true for background mode

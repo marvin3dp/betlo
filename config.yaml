@@ -21,6 +21,8 @@ captcha:
     horizontal_reading: true
     vertical_variance_tolerance: 0.8
   save_image: true
+  upload_to_cloud: true # Upload captcha to uploader.sh for easy access on VPS
+  cloud_uploader_url: https://uploader.sh
 logging:
   colorful: true
   level: MAIN

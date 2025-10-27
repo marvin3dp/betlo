@@ -1,5 +1,17 @@
 #!/bin/bash
 # Installation script for Zefoy Bot with Python venv
+# Compatible with Linux and macOS
+
+# Detect operating system
+OS_TYPE="$(uname -s)"
+case "${OS_TYPE}" in
+    Linux*) OS="Linux" ;;
+    Darwin*) OS="macOS" ;;
+    *) OS="Unknown" ;;
+esac
+
+echo "🖥️  Detected OS: $OS"
+echo ""
 
 # Check Python version
 echo "🔍 Checking Python version..."
@@ -9,6 +21,11 @@ if command -v python3 &> /dev/null; then
 else
     echo "✗ Python 3 not found!"
     echo "Please install Python 3.8 or higher"
+    if [ "$OS" = "macOS" ]; then
+        echo "macOS: brew install python3"
+    else
+        echo "Linux: sudo apt install python3 (Ubuntu/Debian)"
+    fi
     exit 1
 fi
 
@@ -31,9 +48,13 @@ else
     echo "✗ python3-venv is not installed!"
     echo ""
     echo "Install it with:"
-    echo "Ubuntu/Debian: sudo apt install python3-venv"
-    echo "Fedora: sudo dnf install python3-venv"
-    echo "Arch: sudo pacman -S python-virtualenv"
+    if [ "$OS" = "macOS" ]; then
+        echo "macOS: brew install python3 (includes venv)"
+    else
+        echo "Ubuntu/Debian: sudo apt install python3-venv"
+        echo "Fedora: sudo dnf install python3-venv"
+        echo "Arch: sudo pacman -S python-virtualenv"
+    fi
     exit 1
 fi
 
@@ -86,10 +107,20 @@ echo "✓ Directories created"
 # Check for Chrome
 echo ""
 echo "🌐 Checking for Google Chrome..."
-if command -v google-chrome &> /dev/null || command -v chromium-browser &> /dev/null; then
-    echo "✓ Chrome/Chromium found"
+if [ "$OS" = "macOS" ]; then
+    if [ -d "/Applications/Google Chrome.app" ] || [ -d "$HOME/Applications/Google Chrome.app" ] || command -v chromium &> /dev/null; then
+        echo "✓ Chrome/Chromium found"
+    else
+        echo "⚠ Chrome/Chromium not found. Please install Google Chrome."
+        echo "macOS: brew install --cask google-chrome"
+    fi
 else
-    echo "⚠ Chrome/Chromium not found. Please install Google Chrome."
+    if command -v google-chrome &> /dev/null || command -v chromium-browser &> /dev/null || command -v chromium &> /dev/null; then
+        echo "✓ Chrome/Chromium found"
+    else
+        echo "⚠ Chrome/Chromium not found. Please install Google Chrome."
+        echo "Ubuntu/Debian: wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb"
+    fi
 fi
 
 # Check for Tesseract (optional)
@@ -100,7 +131,11 @@ if command -v tesseract &> /dev/null; then
     echo "✓ Tesseract found: $tesseract_version"
 else
     echo "⚠ Tesseract not found (optional for auto captcha solving)"
-    echo "Install with: sudo apt-get install tesseract-ocr"
+    if [ "$OS" = "macOS" ]; then
+        echo "Install with: brew install tesseract"
+    else
+        echo "Install with: sudo apt-get install tesseract-ocr"
+    fi
 fi
 
 # Make run.py executable
