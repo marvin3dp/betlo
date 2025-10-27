@@ -112,25 +112,27 @@ This is a comprehensive major update focused on making the bot work reliably on 
 
 ## 🛠️ New Utility Scripts (4 Scripts)
 
-1. **`run_xvfb.sh`** ⭐
+1. **`venv.sh`** ⭐⭐ **SMARTEST WAY TO RUN**
+   - **Smart environment detection** - auto-detects Desktop vs VPS
+   - **Auto-routes to best mode** - Xvfb on VPS, visible on Desktop
+   - **Auto-install Xvfb** - installs if missing on VPS
+   - **Zero configuration** - just run `./venv.sh` and it handles everything
+   - **Colored output** - clear visual feedback
+
+2. **`run_xvfb.sh`** ⭐
    - Run bot with Xvfb virtual display
    - 95%+ success rate on VPS
    - Automatic setup and cleanup
 
-2. **`install_chrome_vps.sh`**
+3. **`install_chrome_vps.sh`**
    - Install Chrome + dependencies on VPS
    - Handle t64 package variants
    - Complete VPS setup
 
-3. **`check_vps.sh`**
+4. **`check_vps.sh`**
    - Comprehensive VPS environment checker
    - Checks Chrome, Python, RAM, /dev/shm
    - Reports issues and recommendations
-
-4. **`venv.sh`**
-   - Simplified venv activation
-   - Cross-platform compatible
-   - Easy one-command activation
 
 ---
 
@@ -199,21 +201,35 @@ pip install --upgrade -r requirements.txt
 
 ## 🚀 Quick Start
 
-### Desktop (Linux/macOS/Windows)
+### Smart Auto-Detect (Recommended) ⭐⭐
 
+**The easiest and smartest way** - works everywhere, picks the best mode automatically:
+
+```bash
+./venv.sh
+```
+
+**What it does:**
+- ✅ **Desktop/Laptop** → Runs in visible mode (99% success)
+- ✅ **VPS with Xvfb** → Uses virtual display (95%+ success)  
+- ✅ **VPS without Xvfb** → Auto-installs Xvfb or falls back to headless
+
+**Just run one command and forget about it!**
+
+### Manual Options
+
+**Desktop (Linux/macOS/Windows):**
 ```bash
 python run.py
 # Choose: Headless? No
 ```
 
-### VPS (Recommended - 95%+ Success)
-
+**VPS (Manual - 95%+ Success):**
 ```bash
 ./run_xvfb.sh
 ```
 
-### VPS (Alternative - Headless)
-
+**VPS (Alternative - Headless):**
 ```bash
 python run.py
 # Choose: Headless? Yes
