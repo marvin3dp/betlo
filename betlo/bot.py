@@ -626,16 +626,20 @@ class ZefoyBot:
                 if self.headless:
                     try:
                         self._apply_stealth_scripts()
-                    except Exception as stealth_error:
+                    except BaseException as stealth_error:
+                        # Catch ALL exceptions including WebDriverException
                         self.logger.debug(f"Stealth scripts skipped: {stealth_error}")
+                        # Continue without stealth - not critical
 
                 # Enable ad-blocking via Chrome DevTools Protocol
                 # Note: Must be non-blocking (errors caught internally)
                 if self.config.use_adblock:
                     try:
                         self._setup_request_interception()
-                    except Exception as adblock_error:
+                    except BaseException as adblock_error:
+                        # Catch ALL exceptions including WebDriverException
                         self.logger.debug(f"AdBlock setup skipped: {adblock_error}")
+                        # Continue without adblock - not critical
 
                 self.logger.success("Browser initialized successfully")
 
@@ -644,6 +648,27 @@ class ZefoyBot:
 
             except WebDriverException as e:
                 error_msg = str(e)
+
+                # Check if this is a CDP error (not fatal, just means CDP features unavailable)
+                is_cdp_error = (
+                    "Runtime.evaluate" in error_msg
+                    or "JavaScript code failed" in error_msg
+                    or "Network.enable" in error_msg
+                    or "Page.addScriptToEvaluateOnNewDocument" in error_msg
+                )
+
+                if is_cdp_error and self.driver:
+                    # CDP error but driver was created successfully
+                    # This is not a real error, just CDP feature unavailable
+                    self.logger.debug(f"CDP protocol unavailable: {error_msg[:80]}")
+                    self.logger.info("ℹ️  Chrome DevTools Protocol not available")
+                    self.logger.info("💡 Bot will work without CDP features (AdBlock/Stealth)")
+                    self.logger.success("Browser initialized successfully (CDP disabled)")
+
+                    # Driver is working, just CDP features disabled - continue!
+                    return
+
+                # Real WebDriver error (not CDP) or driver not created
                 self.logger.warning(
                     f"⚠ Chrome connection failed (attempt {attempt}/{max_retries}): {error_msg[:150]}"
                 )
@@ -660,7 +685,7 @@ class ZefoyBot:
                         self.logger.info("  - Check /dev/shm size: df -h /dev/shm")
                         self.logger.info("  - Verify Chrome is installed: google-chrome --version")
 
-                # Cleanup on error
+                # Cleanup on error (only for real errors, not CDP)
                 if self.driver:
                     try:
                         self.driver.quit()
