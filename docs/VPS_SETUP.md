@@ -89,18 +89,24 @@ sudo apt install -y \
     git
 
 # Install Chrome dependencies
+# Note: Package names may vary between Ubuntu/Debian versions
 sudo apt install -y \
-    libnss3 \
-    libgconf-2-4 \
-    libxss1 \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    xvfb \
+    wget \
+    ca-certificates \
     fonts-liberation \
+    libnss3 \
+    libxss1 \
     libgbm1 \
-    ca-certificates
+    xvfb \
+    libappindicator3-1 \
+    libu2f-udev \
+    libvulkan1 \
+    xdg-utils
+
+# For older Ubuntu/Debian (20.04, 22.04):
+sudo apt install -y libatk-bridge2.0-0 libgtk-3-0 libasound2 2>/dev/null || \
+# For newer Ubuntu/Debian (24.04+):
+sudo apt install -y libatk-bridge2.0-0t64 libgtk-3-0t64 libasound2t64 2>/dev/null || true
 ```
 
 ### Step 2: Install Google Chrome
@@ -220,7 +226,38 @@ chmod +x install_chrome_vps.sh
 # Selalu run sebagai user biasa
 ```
 
-### 4. Out of Memory
+### 4. Package Dependency Errors
+
+**Error:** `Unable to locate package libgconf-2-4` atau
+`Package 'libasound2' has no installation candidate`
+
+**Penyebab:** Package names berbeda antara Ubuntu/Debian versi lama dan baru
+(24.04+ menggunakan suffix `t64`)
+
+**Solusi:**
+
+Script `install.sh` dan `install_chrome_vps.sh` sudah otomatis handle ini dengan
+fallback. Tapi jika manual install:
+
+```bash
+# Ubuntu/Debian 24.04+ (menggunakan t64 packages)
+sudo apt install -y \
+    libatk-bridge2.0-0t64 \
+    libgtk-3-0t64 \
+    libasound2t64
+
+# Ubuntu/Debian 20.04-22.04 (menggunakan non-t64)
+sudo apt install -y \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libasound2
+
+# libgconf-2-4 sudah deprecated, tidak perlu diinstall
+```
+
+**Note:** Script instalasi otomatis akan coba keduanya dengan fallback.
+
+### 5. Out of Memory
 
 **Error:** Chrome crashes atau killed by kernel
 
@@ -238,7 +275,7 @@ browser:
   disable_images: true  # Hemat RAM
 ```
 
-### 5. Slow Performance
+### 6. Slow Performance
 
 **Penyebab:** VPS specs rendah atau network lambat
 

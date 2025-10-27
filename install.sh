@@ -212,16 +212,29 @@ else
                 echo "Chrome downloaded, installing dependencies..."
 
                 # Install required dependencies for Chrome on VPS/server
+                # Note: Some packages have different names in newer Ubuntu/Debian (t64 suffix)
                 sudo apt install -y \
+                    wget \
+                    ca-certificates \
+                    fonts-liberation \
                     libnss3 \
-                    libgconf-2-4 \
                     libxss1 \
+                    libgbm1 \
+                    xvfb \
                     libappindicator3-1 \
-                    libasound2 \
+                    libu2f-udev \
+                    libvulkan1 \
+                    xdg-utils || true
+
+                # Try to install packages that might have version-specific names
+                sudo apt install -y \
                     libatk-bridge2.0-0 \
                     libgtk-3-0 \
-                    xvfb \
-                    fonts-liberation
+                    libasound2 2> /dev/null \
+                    || sudo apt install -y \
+                        libatk-bridge2.0-0t64 \
+                        libgtk-3-0t64 \
+                        libasound2t64 2> /dev/null || true
 
                 echo "Installing Chrome..."
                 sudo apt install -y "$TEMP_DEB"

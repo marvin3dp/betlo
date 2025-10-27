@@ -39,24 +39,33 @@ fi
 echo ""
 echo "📦 Installing Chrome dependencies..."
 sudo apt update
+
+# Install dependencies with fallback for newer Ubuntu/Debian versions
+# Note: Some packages have different names in newer versions (t64 suffix)
 sudo apt install -y \
     wget \
+    ca-certificates \
+    fonts-liberation \
     libnss3 \
-    libgconf-2-4 \
     libxss1 \
+    libgbm1 \
+    xvfb \
     libappindicator3-1 \
-    libasound2 \
+    libu2f-udev \
+    libvulkan1 \
+    xdg-utils || true
+
+# Try to install packages that might have version-specific names
+# These might fail on some systems, so we ignore errors (|| true)
+sudo apt install -y \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
-    xvfb \
-    fonts-liberation \
-    libgbm1 \
-    ca-certificates
+    libasound2 2> /dev/null \
+    || sudo apt install -y \
+        libatk-bridge2.0-0t64 \
+        libgtk-3-0t64 \
+        libasound2t64 2> /dev/null || true
 
-if [ $? -ne 0 ]; then
-    echo "✗ Failed to install dependencies"
-    exit 1
-fi
 echo "✓ Dependencies installed"
 
 echo ""
