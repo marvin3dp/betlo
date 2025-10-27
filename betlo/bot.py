@@ -751,7 +751,9 @@ class ZefoyBot:
                     )
                     self.logger.error("")
                     self.logger.error("4. Install missing dependencies:")
-                    self.logger.error("   ./install_chrome_vps.sh")
+                    self.logger.error(
+                        "   ./install.sh  # Smart installer (auto-detects & installs)"
+                    )
                     self.logger.error("")
                     self.logger.error("5. Kill zombie processes:")
                     self.logger.error("   pkill -9 -f chrome")

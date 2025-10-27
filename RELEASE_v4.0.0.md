@@ -124,10 +124,13 @@ This is a comprehensive major update focused on making the bot work reliably on 
    - 95%+ success rate on VPS
    - Automatic setup and cleanup
 
-3. **`install_chrome_vps.sh`**
-   - Install Chrome + dependencies on VPS
+3. **`install.sh` - Unified Smart Installer** ⭐
+   - Auto-detects Desktop vs VPS environment
+   - Auto-installs Chrome + dependencies on VPS
+   - Auto-installs Xvfb for VPS
    - Handle t64 package variants
-   - Complete VPS setup
+   - Environment-specific instructions
+   - Replaces deprecated `install_chrome_vps.sh`
 
 4. **`check_vps.sh`**
    - Comprehensive VPS environment checker

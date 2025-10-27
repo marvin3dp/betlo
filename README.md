@@ -274,17 +274,17 @@ pip install -r requirements.txt
 
 ### 🖥️ VPS/Server Installation
 
-For VPS or headless servers, use the automated installer:
+For VPS or headless servers, use the **smart automated installer**:
 
 ```bash
 ./install.sh
 ```
 
-If you get **"Binary Location Must be a String"** error, install Chrome:
-
-```bash
-./install_chrome_vps.sh
-```
+**✨ Smart Features:**
+- 🔍 **Auto-detects** VPS/Server environment
+- 📦 **Auto-installs** Chrome + dependencies
+- 🖥️ **Auto-installs** Xvfb (virtual display)
+- ⚙️ **Auto-configures** for optimal performance
 
 **Check VPS Environment:**
 

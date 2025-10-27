@@ -503,8 +503,8 @@ xvfb-run python run.py
 **Best:** Use Xvfb
 
 ```bash
-./install_chrome_vps.sh  # Install dependencies
-./run_xvfb.sh            # Run bot
+./install.sh   # Smart installer (auto-detects VPS & installs everything)
+./run_xvfb.sh  # Run bot with Xvfb
 ```
 
 ---

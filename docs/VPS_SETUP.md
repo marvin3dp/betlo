@@ -13,11 +13,18 @@ Guide untuk setup bot di VPS atau server tanpa GUI (headless environment).
 **Solusi Cepat:**
 
 ```bash
-# Jalankan script instalasi Chrome otomatis
-./install_chrome_vps.sh
+# Jalankan script instalasi otomatis (smart auto-detect)
+./install.sh
 ```
 
-**Atau manual:**
+**✨ Script ini akan otomatis:**
+- 🔍 Deteksi environment VPS/Server
+- 📦 Install Python venv & dependencies
+- 🌐 Install Chrome + dependencies
+- 🖥️ Install Xvfb (virtual display)
+- ⚙️ Configure untuk optimal performance
+
+**Atau manual (jika diperlukan):**
 
 ```bash
 # Install Chrome
@@ -290,7 +297,7 @@ which google-chrome
 google-chrome --version
 
 # Jika tidak ada, install:
-./install_chrome_vps.sh
+./install.sh  # Smart installer with auto-detect
 ```
 
 ### 2. Chrome Not Reachable
@@ -349,12 +356,11 @@ pkill -9 -f chrome
 pkill -9 -f chromedriver
 rm -rf /tmp/.com.google.Chrome.*
 
-# 4. Install/verify Chrome dependencies
-./install_chrome_vps.sh
+# 4. Install/verify Chrome dependencies & Xvfb
+./install.sh  # Smart installer (auto-installs everything)
 
 # 5. Try running with Xvfb (virtual display)
-sudo apt install xvfb
-xvfb-run python run.py
+./run_xvfb.sh  # Recommended method
 
 # 6. For very low RAM VPS (<1GB), enable single-process mode
 nano config.yaml
@@ -399,7 +405,8 @@ sudo -v
 # Script sudah executable
 chmod +x install.sh
 chmod +x run.py
-chmod +x install_chrome_vps.sh
+chmod +x venv.sh
+chmod +x run_xvfb.sh
 
 # Jangan run bot sebagai root!
 # Selalu run sebagai user biasa
@@ -415,8 +422,8 @@ chmod +x install_chrome_vps.sh
 
 **Solusi:**
 
-Script `install.sh` dan `install_chrome_vps.sh` sudah otomatis handle ini dengan
-fallback. Tapi jika manual install:
+Script `install.sh` sudah otomatis handle ini dengan smart fallback detection.
+Tapi jika manual install:
 
 ```bash
 # Ubuntu/Debian 24.04+ (menggunakan t64 packages)
@@ -734,8 +741,8 @@ Before running bot on VPS, verify:
 # Check VPS environment
 ./check_vps.sh
 
-# Install Chrome only
-./install_chrome_vps.sh
+# Quick Start (Smart Auto-Detect)
+./venv.sh  # Auto-detects environment & runs optimally
 
 # Run bot with Xvfb (RECOMMENDED - best for Zefoy)
 ./run_xvfb.sh
@@ -746,7 +753,7 @@ python run.py
 
 # Run with screen (for 24/7)
 screen -S bot
-./run_xvfb.sh  # or: python run.py
+./venv.sh  # or: ./run_xvfb.sh
 # Detach: Ctrl+A then D
 
 # Check logs

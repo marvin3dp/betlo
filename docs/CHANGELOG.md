@@ -117,12 +117,21 @@ This is a comprehensive update focused on improving VPS compatibility, headless 
 
 ##### New Scripts
 - `run_xvfb.sh` - Run bot with Xvfb virtual display (95%+ success on VPS)
-- `install_chrome_vps.sh` - Install Chrome and dependencies on VPS
 - `check_vps.sh` - Comprehensive VPS environment checker
 - `venv.sh` - **Smart environment detection** - auto-routes to best mode ⭐
 
+##### Enhanced Scripts
+- **`install.sh` - Unified Smart Installer** ⭐
+  - 🔍 Auto-detects Desktop vs VPS/Server environment
+  - 📦 Auto-installs Chrome + all dependencies on VPS
+  - 🖥️ Auto-installs Xvfb (virtual display) for VPS
+  - ⚙️ Environment-specific setup instructions
+  - 🎨 Colored output for better UX
+  - Replaces deprecated `install_chrome_vps.sh` (now integrated)
+
 ##### New Features
-- **Smart Environment Detection** - `venv.sh` auto-detects Desktop vs VPS and routes to best mode
+- **Unified Smart Installer** - `install.sh` now auto-detects environment and installs everything needed
+- **Smart Environment Detection in venv.sh** - Auto-detects Desktop vs VPS and routes to best mode
 - **Auto-Install Xvfb** - Automatically installs Xvfb on VPS if missing
 - Emergency timeout system (30s max)
 - Auto-detection of display availability (auto-enable headless on VPS)

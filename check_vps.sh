@@ -17,7 +17,7 @@ elif command -v chromium &> /dev/null || command -v chromium-browser &> /dev/nul
     echo "   ✓ $VERSION"
 else
     echo "   ✗ Chrome/Chromium not found!"
-    echo "     Install: ./install_chrome_vps.sh"
+    echo "     Install: ./install.sh (auto-installs Chrome + dependencies)"
     ALL_OK=false
 fi
 echo ""
@@ -168,9 +168,9 @@ else
     echo "⚠️  Some issues found. Please fix them before running the bot."
     echo ""
     echo "💡 Quick fixes:"
-    echo "   1. Run installer: ./install.sh"
-    echo "   2. Install Chrome: ./install_chrome_vps.sh"
-    echo "   3. Enable headless: Edit config.yaml, set headless: true"
-    echo "   4. Check documentation: docs/VPS_SETUP.md"
+    echo "   1. Run smart installer: ./install.sh (auto-detects & installs everything)"
+    echo "   2. Check VPS guide: docs/VPS_SETUP.md"
+    echo "   3. Run with Xvfb: ./run_xvfb.sh"
+    echo "   4. Or enable headless: Edit config.yaml, set headless: true"
 fi
 echo ""
