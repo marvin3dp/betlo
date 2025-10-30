@@ -4,7 +4,7 @@ undetected-chromedriver>=3.5.5
 webdriver-manager==4.0.1
 
 # Image Processing & OCR (for captcha)
-Pillow==10.1.0
+Pillow==10.3.0
 opencv-python-headless>=4.8.0  # Headless version (lighter, no GUI)
 pytesseract==0.3.10
 numpy<2.0.0  # OpenCV requires numpy 1.x
