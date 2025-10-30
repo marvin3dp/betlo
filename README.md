@@ -181,8 +181,8 @@
 ╭──────────────────── 🔍 OCR Captcha Solver ─────────────────────╮
 │                                                                 │
 │  ⚡ FAST Mode: 30 attempts in 10-20s                            │
-│  🎯 Horizontal reading enabled                                 │
-│  📊 Confidence scoring active                                  │
+│  🎯 Horizontal reading enabled                                  │
+│  📊 Confidence scoring active                                   │
 │                                                                 │
 │  [████████████████░░░░░░░░] 60% Complete                        │
 │                                                                 │
@@ -615,7 +615,7 @@ logging:
        │
        ▼
 ┌─────────────────────────────────────┐
-│   Preprocessing (5-12 methods)     │
+│   Preprocessing (5-12 methods)      │
 │   • Line removal                    │
 │   • Noise reduction                 │
 │   • Contrast enhancement            │
@@ -624,7 +624,7 @@ logging:
        │
        ▼
 ┌─────────────────────────────────────┐
-│   OCR Engine (5-26 configs)        │
+│   OCR Engine (5-26 configs)         │
 │   • Tesseract LSTM                  │
 │   • Multiple PSM modes              │
 │   • Horizontal reading              │
@@ -1241,7 +1241,7 @@ import betlo
 
 ---
 
-**Last Updated:** October 23, 2025 **Current Version:** 3.0.0 - Package Renamed
+**Last Updated:** October 30, 2025 **Current Version:** 4.0.0 - Package Renamed
 to Betlo & Optimized Pre-commit
 
 **[↑ Back to Top](#-table-of-contents)**
