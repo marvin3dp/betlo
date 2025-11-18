@@ -512,6 +512,57 @@ class ZefoyBot:
         # If not found, return None (will use system default)
         return None
 
+    def _get_chrome_version(self):
+        """Detect Chrome version to ensure ChromeDriver compatibility"""
+        import subprocess
+        import re
+
+        chrome_binary = self._find_chrome_binary()
+        if not chrome_binary:
+            # Try common commands
+            for cmd in ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]:
+                try:
+                    result = subprocess.run(
+                        [cmd, "--version"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5,
+                    )
+                    if result.returncode == 0:
+                        version_output = result.stdout.strip()
+                        # Extract version number (e.g., "Google Chrome 131.0.6778.85" -> 131)
+                        match = re.search(r"(\d+)\.\d+\.\d+\.\d+", version_output)
+                        if match:
+                            version_main = int(match.group(1))
+                            self.logger.debug(f"Detected Chrome version: {version_main} from '{version_output}'")
+                            return version_main
+                except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
+                    self.logger.debug(f"Could not get version from {cmd}: {e}")
+                    continue
+        else:
+            # Use the found binary
+            try:
+                result = subprocess.run(
+                    [chrome_binary, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
+                if result.returncode == 0:
+                    version_output = result.stdout.strip()
+                    # Extract version number
+                    match = re.search(r"(\d+)\.\d+\.\d+\.\d+", version_output)
+                    if match:
+                        version_main = int(match.group(1))
+                        self.logger.debug(f"Detected Chrome version: {version_main} from '{version_output}'")
+                        return version_main
+            except (subprocess.TimeoutExpired, Exception) as e:
+                self.logger.debug(f"Could not get version from {chrome_binary}: {e}")
+
+        # If detection fails, return None (let undetected-chromedriver auto-detect)
+        self.logger.warning("Could not detect Chrome version, using auto-detection")
+        return None
+
     def _setup_driver(self):
         """Setup undetected Chrome driver with retry mechanism"""
         max_retries = 3
@@ -535,6 +586,13 @@ class ZefoyBot:
                     self.logger.debug(f"Using Chrome binary: {chrome_binary}")
                 else:
                     self.logger.warning("Chrome binary not explicitly set, using system default")
+
+                # Detect Chrome version to ensure ChromeDriver compatibility
+                chrome_version_main = self._get_chrome_version()
+                if chrome_version_main:
+                    self.logger.debug(f"Using detected Chrome version: {chrome_version_main}")
+                else:
+                    self.logger.debug("Using auto-detection for ChromeDriver version")
 
                 # Basic options
                 if self.headless:
@@ -643,9 +701,10 @@ class ZefoyBot:
 
                 # Create driver with retry-safe parameters
                 self.logger.debug("Creating Chrome driver instance...")
+                # Use detected version if available, otherwise let undetected-chromedriver auto-detect
                 self.driver = uc.Chrome(
                     options=options,
-                    version_main=None,
+                    version_main=chrome_version_main,  # Use detected version or None for auto-detection
                     use_subprocess=True,  # More stable
                     driver_executable_path=None,
                 )
@@ -708,6 +767,27 @@ class ZefoyBot:
                 )
 
                 # Check for specific error types and provide targeted solutions
+                is_version_mismatch = (
+                    "this version of chromedriver only supports" in error_msg.lower()
+                    or "chromedriver version" in error_msg.lower()
+                    or ("session not created" in error_msg.lower() and "chromedriver" in error_msg.lower())
+                )
+
+                if is_version_mismatch:
+                    self.logger.warning("⚠ ChromeDriver version mismatch detected")
+                    if attempt == 1:
+                        self.logger.info("💡 Fix ChromeDriver version mismatch:")
+                        self.logger.info("  1. Update undetected-chromedriver:")
+                        self.logger.info("     pip install --upgrade undetected-chromedriver")
+                        self.logger.info("  2. Or reinstall:")
+                        self.logger.info("     pip uninstall undetected-chromedriver")
+                        self.logger.info("     pip install undetected-chromedriver")
+                        # Try to show detected Chrome version
+                        detected_version = self._get_chrome_version()
+                        if detected_version:
+                            self.logger.info(f"  3. Detected Chrome version: {detected_version}")
+                            self.logger.info("     ChromeDriver should match this version")
+
                 if (
                     "chrome not reachable" in error_msg.lower()
                     or "cannot connect to chrome" in error_msg.lower()

@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# Chrome Fix Script for Zefoy Bot
 # This script helps kill zombie Chrome/ChromeDriver processes
 # Compatible with Linux and macOS
 
-echo "🔧 Chrome Fix Script for Zefoy Bot"
-echo "=================================="
+echo "🔧 Chrome Fix..."
 echo ""
 
 # Detect operating system
@@ -69,6 +67,27 @@ else
 fi
 
 echo -e "${GREEN}✓${NC} Temporary files cleaned"
+echo ""
+
+# Step 3: Update undetected-chromedriver (if in virtual environment)
+echo "Step 3: Checking undetected-chromedriver..."
+
+# Check if we're in a virtual environment
+if [ -f "venv/bin/activate" ] || [ -n "$VIRTUAL_ENV" ]; then
+    echo "Virtual environment detected, updating undetected-chromedriver..."
+    if [ -f "venv/bin/pip" ]; then
+        venv/bin/pip install --upgrade undetected-chromedriver 2> /dev/null
+        echo -e "${GREEN}✓${NC} undetected-chromedriver updated"
+    elif [ -n "$VIRTUAL_ENV" ]; then
+        pip install --upgrade undetected-chromedriver 2> /dev/null
+        echo -e "${GREEN}✓${NC} undetected-chromedriver updated"
+    fi
+else
+    echo "No virtual environment detected, skipping undetected-chromedriver update"
+    echo -e "${YELLOW}Note:${NC} If you're using a virtual environment, activate it first:"
+    echo "  source venv/bin/activate"
+    echo "  pip install --upgrade undetected-chromedriver"
+fi
 echo ""
 
 echo -e "${GREEN}✓${NC} Chrome fix script completed!"
